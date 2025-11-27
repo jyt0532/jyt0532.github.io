@@ -200,7 +200,7 @@
                 );
             };
 
-            // Data
+            // Data - Complete list for Lesson 27
             const vocabularyList = [
                 { 
                     id: 1, 
@@ -270,6 +270,28 @@
                 },
                 { 
                     id: 7, 
+                    kanji: "心配[しんぱい]", 
+                    reading: "しんぱい", 
+                    meaning: "擔心", 
+                    example: "将来[しょうらい]のことを心配[しんぱい]する (擔心將來的事)\n心配[しんぱい]を掛[か]ける (讓人擔心)\n心配[しんぱい]ない (沒問題/不用擔心)", 
+                    imagePrompt: "anime style, young character looking worried while holding a letter, emotional expression, soft lighting, slice of life", 
+                    color: "bg-gray-50",
+                    accentColor: "text-gray-600",
+                    borderColor: "border-gray-200"
+                },
+                { 
+                    id: 8, 
+                    kanji: "ペット", 
+                    reading: "ペット", 
+                    meaning: "寵物", 
+                    example: "ペットと散歩[さんぽ]する (帶寵物散步)\nペットショップ (寵物店)\nペットホテル (寵物旅館)", 
+                    imagePrompt: "anime style, cheerful girl hugging a cute fluffy dog and a cat, happy atmosphere, pastel colors", 
+                    color: "bg-orange-50",
+                    accentColor: "text-orange-600",
+                    borderColor: "border-orange-200"
+                },
+                { 
+                    id: 9, 
                     kanji: "鳥[とり]", 
                     reading: "とり", 
                     meaning: "鳥", 
@@ -280,7 +302,7 @@
                     borderColor: "border-cyan-200"
                 },
                 { 
-                    id: 8, 
+                    id: 10, 
                     kanji: "声[こえ]", 
                     reading: "こえ", 
                     meaning: "聲音 (人或動物)", 
@@ -291,7 +313,7 @@
                     borderColor: "border-purple-200"
                 },
                 { 
-                    id: 9, 
+                    id: 11, 
                     kanji: "波[なみ]", 
                     reading: "なみ", 
                     meaning: "波浪", 
@@ -302,7 +324,7 @@
                     borderColor: "border-indigo-200"
                 },
                 { 
-                    id: 10, 
+                    id: 12, 
                     kanji: "花火[はなび]", 
                     reading: "はなび", 
                     meaning: "煙火", 
@@ -313,7 +335,7 @@
                     borderColor: "border-red-200"
                 },
                 { 
-                    id: 11, 
+                    id: 13, 
                     kanji: "道具[どうぐ]", 
                     reading: "どうぐ", 
                     meaning: "工具 / 道具", 
@@ -324,8 +346,52 @@
                     borderColor: "border-stone-200"
                 },
                 { 
-                    id: 12, 
-                    kanji: "教室[きょうしつ]", 
+                    id: 14, 
+                    kanji: "クリーニング", 
+                    reading: "クリーニング", 
+                    meaning: "乾洗 / 洗衣", 
+                    example: "スーツをクリーニングに出[だ]す (把西裝拿去送洗)\nドライクリーニング (乾洗)\nクリーニング店[てん] (洗衣店)", 
+                    imagePrompt: "anime style, clean folded shirts and suits in plastic covers, laundry shop interior, bright and tidy", 
+                    color: "bg-blue-50",
+                    accentColor: "text-blue-500",
+                    borderColor: "border-blue-200"
+                },
+                { 
+                    id: 15, 
+                    kanji: "家[いえ]", 
+                    reading: "いえ", 
+                    meaning: "家", 
+                    example: "家[いえ]を建[た]てる (蓋房子)\n家[いえ]に帰[かえ]る (回家)\n自分[じぶん]の家[いえ] (自己的家)", 
+                    imagePrompt: "anime style, cozy japanese house exterior, sunset, warm lights coming from windows, welcoming atmosphere", 
+                    color: "bg-orange-50",
+                    accentColor: "text-orange-700",
+                    borderColor: "border-orange-200"
+                },
+                { 
+                    id: 16, 
+                    kanji: "マンション", 
+                    reading: "マンション", 
+                    meaning: "公寓 / 大樓", 
+                    example: "高層[こうそう]マンションに住[す]む (住在高層公寓)\nマンションの管理費[かんりひ] (公寓管理費)", 
+                    imagePrompt: "anime style, modern high-rise apartment building in tokyo, blue sky, city life", 
+                    color: "bg-slate-50",
+                    accentColor: "text-slate-600",
+                    borderColor: "border-slate-200"
+                },
+                { 
+                    id: 17, 
+                    kanji: "キッチン", 
+                    reading: "キッチン", 
+                    meaning: "廚房", 
+                    example: "広[ひろ]いキッチン (寬敞的廚房)\nシステムキッチン (系統廚具)\n台所[だいどころ] (傳統廚房說法)", 
+                    imagePrompt: "anime style, modern clean kitchen with cooking utensils, sunlight streaming in, cozy cooking space", 
+                    color: "bg-yellow-50",
+                    accentColor: "text-yellow-600",
+                    borderColor: "border-yellow-200"
+                },
+                { 
+                    id: 18, 
+                    kanji: "～教室[きょうしつ]", 
                     reading: "きょうしつ", 
                     meaning: "～教室 (才藝班)", 
                     example: "ピアノ教室[きょうしつ] (鋼琴教室)\n体操教室[たいそうきょうしつ] (體操教室)\n学習塾[がくしゅうじゅく] (補習班)\n英会話[えいかいわ]スクール (英語補習班)", 
@@ -335,7 +401,40 @@
                     borderColor: "border-pink-200"
                 },
                 { 
-                    id: 13, 
+                    id: 19, 
+                    kanji: "パーティールーム", 
+                    reading: "パーティールーム", 
+                    meaning: "派對室", 
+                    example: "マンションのパーティールームを予約[よやく]する (預約公寓的派對室)\n誕生日[たんじょうび]パーティー (生日派對)", 
+                    imagePrompt: "anime style, decorated party room with balloons and streamers, festive atmosphere, colorful", 
+                    color: "bg-fuchsia-50",
+                    accentColor: "text-fuchsia-600",
+                    borderColor: "border-fuchsia-200"
+                },
+                { 
+                    id: 20, 
+                    kanji: "方[かた]", 
+                    reading: "かた", 
+                    meaning: "位 (人的敬稱)", 
+                    example: "あの方[かた]はどなたですか (那位是誰？)\n先生[せんせい]の方[かた] (各位老師)\nお店[みせ]の方[かた] (店員)", 
+                    imagePrompt: "anime style, elegant person silhouette, polite gesture, respectful atmosphere, soft focus", 
+                    color: "bg-zinc-50",
+                    accentColor: "text-zinc-600",
+                    borderColor: "border-zinc-200"
+                },
+                { 
+                    id: 21, 
+                    kanji: "～後[ご]", 
+                    reading: "ご", 
+                    meaning: "～後 (時間/期間)", 
+                    example: "3年後[さんねんご] (三年後)\n授業後[じゅぎょうご] (下課後)\n後[のち]ほど (稍後)", 
+                    imagePrompt: "anime style, clock showing time passing, calendar pages turning, future concept, blue tones", 
+                    color: "bg-blue-50",
+                    accentColor: "text-blue-800",
+                    borderColor: "border-blue-200"
+                },
+                { 
+                    id: 22, 
                     kanji: "～しか", 
                     reading: "～しか", 
                     meaning: "只～ (後接否定)", 
@@ -346,7 +445,7 @@
                     borderColor: "border-gray-200"
                 },
                 { 
-                    id: 14, 
+                    id: 23, 
                     kanji: "他[ほか]の", 
                     reading: "ほかの", 
                     meaning: "其他的", 
@@ -357,7 +456,7 @@
                     borderColor: "border-teal-200"
                 },
                 { 
-                    id: 15, 
+                    id: 24, 
                     kanji: "はっきり", 
                     reading: "はっきり", 
                     meaning: "清楚地 / 明確地", 
@@ -368,7 +467,106 @@
                     borderColor: "border-emerald-200"
                 },
                 { 
-                    id: 16, 
+                    id: 25, 
+                    kanji: "家具[かぐ]", 
+                    reading: "かぐ", 
+                    meaning: "家具", 
+                    example: "家具[かぐ]を揃[そろ]える (備齊家具)\n家具屋[かぐや] (家具店)\n輸入家具[ゆにゅうかぐ] (進口家具)", 
+                    imagePrompt: "anime style, nicely arranged living room with sofa, table and shelves, interior design, cozy home", 
+                    color: "bg-amber-50",
+                    accentColor: "text-amber-700",
+                    borderColor: "border-amber-200"
+                },
+                { 
+                    id: 26, 
+                    kanji: "本棚[ほんだな]", 
+                    reading: "ほんだな", 
+                    meaning: "書架", 
+                    example: "本棚[ほんだな]に本[ほん]を並[なら]べる (把書排列在書架上)\n整理整頓[せいりせいとん] (整理整頓)", 
+                    imagePrompt: "anime style, tall wooden bookshelf filled with colorful books, library atmosphere, quiet study room", 
+                    color: "bg-orange-50",
+                    accentColor: "text-orange-800",
+                    borderColor: "border-orange-200"
+                },
+                { 
+                    id: 27, 
+                    kanji: "いつか", 
+                    reading: "いつか", 
+                    meaning: "遲早 / 總有一天", 
+                    example: "いつか日本[にほん]へ行[い]きたい (總有一天想去日本)\nいつか夢[ゆめ]が叶[かな]う (夢想終會實現)", 
+                    imagePrompt: "anime style, character looking at distant horizon with hope, sunrise, dreams, future concept", 
+                    color: "bg-sky-50",
+                    accentColor: "text-sky-500",
+                    borderColor: "border-sky-200"
+                },
+                { 
+                    id: 28, 
+                    kanji: "建[た]てます", 
+                    reading: "たてます", 
+                    meaning: "建造 / 蓋", 
+                    example: "家[いえ]を建[た]てる (蓋房子)\nビルが建[た]つ (大樓蓋起來 - 自動詞)\n記念碑[きねんひ]を建[た]てる (建立紀念碑)", 
+                    imagePrompt: "anime style, construction site of a new house, blueprints, hard hat, progress", 
+                    color: "bg-stone-50",
+                    accentColor: "text-stone-600",
+                    borderColor: "border-stone-200"
+                },
+                { 
+                    id: 29, 
+                    kanji: "素晴[すば]らしい", 
+                    reading: "すばらしい", 
+                    meaning: "極好的 / 很棒的", 
+                    example: "素晴[すば]らしい景色[けしき] (絕景)\n素晴[すば]らしい演奏[えんそう] (精彩的演奏)\nワンダフル (Wonderful)", 
+                    imagePrompt: "anime style, character with sparkling eyes looking at something amazing, starry background, awe expression", 
+                    color: "bg-yellow-50",
+                    accentColor: "text-yellow-500",
+                    borderColor: "border-yellow-200"
+                },
+                { 
+                    id: 30, 
+                    kanji: "子[こ]どもたち", 
+                    reading: "こどもたち", 
+                    meaning: "孩子們", 
+                    example: "子[こ]どもたちが遊[あそ]んでいる (孩子們在玩耍)\n未来[みらい]の子[こ]どもたち (未來的孩子們)", 
+                    imagePrompt: "anime style, group of happy children playing in a park, running, laughing, sunny day", 
+                    color: "bg-green-50",
+                    accentColor: "text-green-500",
+                    borderColor: "border-green-200"
+                },
+                { 
+                    id: 31, 
+                    kanji: "大好[だいす]き", 
+                    reading: "だいすき", 
+                    meaning: "非常喜歡", 
+                    example: "アニメが大好[だいす]きです (非常喜歡動漫)\n大好[だいす]きな人[ひと] (最喜歡的人)", 
+                    imagePrompt: "anime style, girl holding a giant heart, blushing, hearts background, love confession scene", 
+                    color: "bg-pink-50",
+                    accentColor: "text-pink-500",
+                    borderColor: "border-pink-200"
+                },
+                { 
+                    id: 32, 
+                    kanji: "主人公[しゅじんこう]", 
+                    reading: "しゅじんこう", 
+                    meaning: "主角 / 主人翁", 
+                    example: "物語[ものがたり]の主人公[しゅじんこう] (故事的主角)\nゲームの主人公[しゅじんこう] (遊戲主角)", 
+                    imagePrompt: "anime style, cool hero character standing in spotlight, epic pose, cape flowing, fantasy background", 
+                    color: "bg-red-50",
+                    accentColor: "text-red-600",
+                    borderColor: "border-red-200"
+                },
+                { 
+                    id: 33, 
+                    kanji: "形[かたち]", 
+                    reading: "かたち", 
+                    meaning: "形狀 / 樣子", 
+                    example: "変[か]わった形[かたち] (奇怪的形狀)\n愛[あい]の形[かたち] (愛的形式)\n形[かたち]を整[ととの]える (整頓外型)", 
+                    imagePrompt: "anime style, geometric shapes floating, abstract art, puzzle pieces fitting together, creative", 
+                    color: "bg-indigo-50",
+                    accentColor: "text-indigo-500",
+                    borderColor: "border-indigo-200"
+                },
+                { 
+                    id: 34, 
                     kanji: "不思議[ふしぎ]", 
                     reading: "ふしぎ", 
                     meaning: "不可思議 / 奇怪", 
@@ -379,7 +577,29 @@
                     borderColor: "border-violet-200"
                 },
                 { 
-                    id: 17, 
+                    id: 35, 
+                    kanji: "ポケット", 
+                    reading: "ポケット", 
+                    meaning: "口袋", 
+                    example: "ポケットに手[て]を入[い]れる (把手放進口袋)\n四次元[よじげん]ポケット (四次元口袋 - 哆啦A夢)", 
+                    imagePrompt: "anime style, close up of a denim jeans pocket, hand reaching in, casual fashion detail", 
+                    color: "bg-blue-50",
+                    accentColor: "text-blue-600",
+                    borderColor: "border-blue-200"
+                },
+                { 
+                    id: 36, 
+                    kanji: "例[たと]えば", 
+                    reading: "たとえば", 
+                    meaning: "例如", 
+                    example: "例[たと]えば、こんな場合[ばあい] (例如，這種情況)\n例[たと]え話[ばなし] (比喻/例話)", 
+                    imagePrompt: "anime style, teacher pointing at blackboard with examples, classroom setting, explanation", 
+                    color: "bg-teal-50",
+                    accentColor: "text-teal-600",
+                    borderColor: "border-teal-200"
+                },
+                { 
+                    id: 37, 
                     kanji: "付[つ]けます", 
                     reading: "つけます", 
                     meaning: "戴上 / 縫上 / 塗抹", 
@@ -390,7 +610,18 @@
                     borderColor: "border-red-200"
                 },
                 { 
-                    id: 18, 
+                    id: 38, 
+                    kanji: "自由[じゆう]に", 
+                    reading: "じゆうに", 
+                    meaning: "自由地 / 隨意地", 
+                    example: "自由[じゆう]に意見[いけん]を言[い]う (自由發表意見)\n自由[じゆう]に使[つか]ってください (請隨意使用)\n自由[じゆう]の女神[めがみ] (自由女神)", 
+                    imagePrompt: "anime style, bird flying out of a cage, open sky, feather floating, symbol of freedom", 
+                    color: "bg-sky-50",
+                    accentColor: "text-sky-600",
+                    borderColor: "border-sky-200"
+                },
+                { 
+                    id: 39, 
                     kanji: "空[そら]", 
                     reading: "そら", 
                     meaning: "天空", 
@@ -401,7 +632,7 @@
                     borderColor: "border-sky-300"
                 },
                 { 
-                    id: 19, 
+                    id: 40, 
                     kanji: "飛[と]びます", 
                     reading: "とびます", 
                     meaning: "飛", 
@@ -412,7 +643,7 @@
                     borderColor: "border-blue-300"
                 },
                 { 
-                    id: 20, 
+                    id: 41, 
                     kanji: "昔[むかし]", 
                     reading: "むかし", 
                     meaning: "從前 / 古時候", 
@@ -421,6 +652,39 @@
                     color: "bg-amber-50",
                     accentColor: "text-amber-600",
                     borderColor: "border-amber-200"
+                },
+                { 
+                    id: 42, 
+                    kanji: "自分[じぶん]", 
+                    reading: "じぶん", 
+                    meaning: "自己", 
+                    example: "自分[じぶん]でやる (自己做)\n自分[じぶん]の部屋[へや] (自己的房間)\n自分[じぶん]勝手[かって] (任性)", 
+                    imagePrompt: "anime style, character looking into a mirror reflection, introspection, quiet atmosphere", 
+                    color: "bg-purple-50",
+                    accentColor: "text-purple-600",
+                    borderColor: "border-purple-200"
+                },
+                { 
+                    id: 43, 
+                    kanji: "将来[しょうらい]", 
+                    reading: "しょうらい", 
+                    meaning: "將來", 
+                    example: "将来[しょうらい]の夢[ゆめ] (將來的夢想)\n近[ちか]い将来[しょうらい] (不久的將來)", 
+                    imagePrompt: "anime style, character looking at a futuristic city skyline, sci-fi elements, hope, visionary", 
+                    color: "bg-cyan-50",
+                    accentColor: "text-cyan-600",
+                    borderColor: "border-cyan-200"
+                },
+                { 
+                    id: 44, 
+                    kanji: "ドラえもん", 
+                    reading: "ドラえもん", 
+                    meaning: "哆啦A夢", 
+                    example: "ドラえもんはネコ型[がた]ロボットです (哆啦A夢是貓型機器人)\nドラえもんの道具[どうぐ] (哆啦A夢的道具)", 
+                    imagePrompt: "anime style, blue cat robot round figure, red nose, bell, futuristic gadget, cartoon style", 
+                    color: "bg-blue-50",
+                    accentColor: "text-blue-500",
+                    borderColor: "border-blue-200"
                 }
             ];
 
