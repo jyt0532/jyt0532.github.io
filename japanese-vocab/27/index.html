@@ -131,14 +131,30 @@
             const [currentIndex, setCurrentIndex] = useState(0);
             const [isFlipped, setIsFlipped] = useState(false);
 
-            // Furigana Component
-            const FuriganaText = ({ text, className = "" }) => {
+            const speak = (text) => {
+                // 移除 [ ] 內的讀音標記
+                let cleanText = text.replace(/\[.*?\]/g, "");
+                // 移除括號內的中文翻譯 (例如：(正在養寵物))
+                cleanText = cleanText.replace(/\(.*?\)/g, "");
+                // 移除全形括號內的中文翻譯 (例如：(正在養寵物))
+                cleanText = cleanText.replace(/（.*?）/g, "");
+                
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.lang = 'ja-JP';
+                window.speechSynthesis.speak(utterance);
+            };
+
+            // Furigana Component with Speaker Button for each line
+            const FuriganaText = ({ text, className = "", showSpeaker = false, speakerColor = "text-gray-400" }) => {
                 if (!text) return null;
                 const lines = text.split('\n');
                 
                 return (
                     <>
                         {lines.map((line, lineIndex) => {
+                            // 提取純日文部分供朗讀 (移除括號翻譯)
+                            const japanesePart = line.split('(')[0].split('（')[0]; 
+
                             const regex = /([\u4e00-\u9faf々]+)\[(.*?)\]/g;
                             const parts = [];
                             let lastIndex = 0;
@@ -161,9 +177,23 @@
                             }
 
                             return (
-                                <span key={lineIndex} className={`block ${lineIndex > 0 ? 'mt-2 pt-2 border-t border-dashed border-gray-200' : ''} ${className}`}>
-                                    {parts}
-                                </span>
+                                <div key={lineIndex} className={`flex items-start gap-2 ${lineIndex > 0 ? 'mt-3 pt-2 border-t border-dashed border-gray-200' : ''} ${className}`}>
+                                    {showSpeaker && (
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                speak(japanesePart);
+                                            }}
+                                            className={`mt-1 flex-shrink-0 p-1 rounded-full hover:bg-gray-100 transition-colors ${speakerColor}`}
+                                            title="朗讀此句"
+                                        >
+                                            <Volume2 size={16} />
+                                        </button>
+                                    )}
+                                    <span className="block flex-1">
+                                        {parts}
+                                    </span>
+                                </div>
                             );
                         })}
                     </>
@@ -433,13 +463,6 @@
                 setIsFlipped(!isFlipped);
             };
 
-            const speak = (text) => {
-                const cleanText = text.replace(/\[.*?\]/g, "");
-                const utterance = new SpeechSynthesisUtterance(cleanText);
-                utterance.lang = 'ja-JP';
-                window.speechSynthesis.speak(utterance);
-            };
-
             return (
                 <div className="flex flex-col items-center justify-center min-h-screen bg-slate-100 p-4 font-sans text-gray-800">
                     
@@ -490,6 +513,7 @@
                                     <p className="text-xl text-gray-400 mb-3 font-medium tracking-wide">{currentWord.reading}</p>
                                     
                                     <div className={`text-5xl font-black mb-8 text-center ${currentWord.accentColor}`}>
+                                        {/* 單字正面，不顯示發音按鈕，點擊大喇叭發音 */}
                                         <FuriganaText text={currentWord.kanji} />
                                     </div>
                                     
@@ -516,8 +540,18 @@
                                 
                                 <div className="flex-1 flex flex-col p-6 h-full">
                                     <div className="text-center mb-4 pb-4 border-b border-gray-100">
-                                        <h3 className={`text-2xl font-bold mb-1 ${currentWord.accentColor}`}>
+                                        <h3 className={`text-2xl font-bold mb-1 ${currentWord.accentColor} flex items-center justify-center gap-2`}>
                                             <FuriganaText text={currentWord.kanji} />
+                                            <button 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    speak(currentWord.kanji);
+                                                }}
+                                                className={`p-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-colors`}
+                                                title="播放單字發音"
+                                            >
+                                                <Volume2 size={18} />
+                                            </button>
                                         </h3>
                                         <p className="text-lg text-gray-800 font-bold mt-2">{currentWord.meaning}</p>
                                     </div>
@@ -529,7 +563,12 @@
                                                 <span>例句與補充</span>
                                             </div>
                                             <div className="text-gray-700 text-base leading-relaxed space-y-3">
-                                                <FuriganaText text={currentWord.example} />
+                                                {/* 例句區域，啟用 showSpeaker 功能 */}
+                                                <FuriganaText 
+                                                    text={currentWord.example} 
+                                                    showSpeaker={true} 
+                                                    speakerColor={currentWord.accentColor} 
+                                                />
                                             </div>
                                         </div>
                                     </div>
