@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大家的日本語 第27課 - 互動單字卡 (動漫增強穩定版)</title>
+    <title>大家的日本語 第27課 - 互動單字卡 (完整版)</title>
     
-    <!-- 1. 載入 Tailwind CSS -->
+    <!-- 1. 載入 Tailwind CSS (樣式) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. 載入 Babel -->
+    <!-- 2. 載入 Babel (讓瀏覽器看得懂 JSX) -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <!-- 3. 設定 Import Map -->
@@ -32,119 +32,32 @@
         
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* 圖片載入動畫 */
-        @keyframes pulse-gray {
-            0%, 100% { background-color: #e2e8f0; }
-            50% { background-color: #cbd5e1; }
-        }
-        .animate-pulse-gray {
-            animation: pulse-gray 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
     </style>
 </head>
 <body class="bg-slate-100">
     <div id="root"></div>
 
     <script type="text/babel" data-type="module">
-        import React, { useState, useEffect, useRef, useCallback } from 'react';
+        import React, { useState, useEffect, useCallback } from 'react';
         import { createRoot } from 'react-dom/client';
-        import { ChevronLeft, ChevronRight, RotateCcw, Volume2, BookOpen, Lightbulb, Image as ImageIcon, RefreshCw } from 'lucide-react';
-
-        // ---------------------------------------------------------
-        // 1. 智慧圖片元件
-        // ---------------------------------------------------------
-        const SmartImage = ({ src, alt, className }) => {
-            const [status, setStatus] = useState('loading'); // loading, loaded, error
-            const [retryCount, setRetryCount] = useState(0);
-            const maxRetries = 3;
-
-            useEffect(() => {
-                setStatus('loading');
-                setRetryCount(0);
-                
-                // 嘗試預載圖片以確認其可用性
-                const img = new Image();
-                img.src = src;
-                img.onload = () => setStatus('loaded');
-                img.onerror = () => {
-                    // 第一次失敗不立即報錯，等待重試機制
-                    if (retryCount === 0) handleError();
-                };
-            }, [src]);
-
-            const handleError = () => {
-                if (retryCount < maxRetries) {
-                    setTimeout(() => {
-                        setRetryCount(prev => prev + 1);
-                    }, 2000); // 延長重試間隔至 2 秒
-                } else {
-                    setStatus('error');
-                }
-            };
-
-            // 加入時間戳以繞過可能的緩存問題（僅在重試時）
-            const currentSrc = retryCount > 0 ? `${src}&t=${Date.now()}` : src;
-
-            return (
-                <div className={`relative w-full h-full overflow-hidden ${className}`}>
-                    {/* 載入中 */}
-                    {status !== 'loaded' && status !== 'error' && (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 animate-pulse-gray z-10">
-                            <ImageIcon className="text-gray-400 w-10 h-10 mb-2 opacity-50" />
-                            <span className="text-gray-400 text-xs">
-                                {retryCount > 0 ? `重試中 (${retryCount}/${maxRetries})...` : '繪製中...'}
-                            </span>
-                        </div>
-                    )}
-
-                    {/* 錯誤 */}
-                    {status === 'error' && (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 z-10">
-                            <p className="text-gray-400 text-xs mb-2">圖片載入失敗</p>
-                            <button 
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setRetryCount(0);
-                                    setStatus('loading');
-                                }}
-                                className="flex items-center gap-1 px-3 py-1 bg-white border border-gray-300 rounded-full text-xs text-gray-600 hover:bg-gray-50 shadow-sm"
-                            >
-                                <RefreshCw size={12} /> 重試
-                            </button>
-                        </div>
-                    )}
-
-                    {/* 圖片 */}
-                    <img 
-                        src={currentSrc} 
-                        alt={alt}
-                        className={`w-full h-full object-cover transition-opacity duration-500 ${status === 'loaded' ? 'opacity-100' : 'opacity-0'}`}
-                        onLoad={() => setStatus('loaded')}
-                        onError={handleError}
-                    />
-                </div>
-            );
-        };
+        import { ChevronLeft, ChevronRight, RotateCcw, Volume2, BookOpen, Lightbulb, Image as ImageIcon } from 'lucide-react';
 
         const VocabularySlides = () => {
             const [currentIndex, setCurrentIndex] = useState(0);
             const [isFlipped, setIsFlipped] = useState(false);
 
             const speak = (text) => {
-                // 移除 [ ] 內的讀音標記
-                let cleanText = text.replace(/\[.*?\]/g, "");
-                // 移除括號內的中文翻譯 (例如：(正在養寵物))
-                cleanText = cleanText.replace(/\(.*?\)/g, "");
-                // 移除全形括號內的中文翻譯 (例如：(正在養寵物))
-                cleanText = cleanText.replace(/（.*?）/g, "");
+                // 清理文字，只留下日文供朗讀
+                let cleanText = text.replace(/\[.*?\]/g, ""); // 移除 [ ] 讀音
+                cleanText = cleanText.replace(/\(.*?\)/g, ""); // 移除 () 翻譯
+                cleanText = cleanText.replace(/（.*?）/g, ""); // 移除全形 ()
                 
                 const utterance = new SpeechSynthesisUtterance(cleanText);
                 utterance.lang = 'ja-JP';
                 window.speechSynthesis.speak(utterance);
             };
 
-            // Furigana Component with Speaker Button for each line
+            // Furigana Component with Speaker Button
             const FuriganaText = ({ text, className = "", showSpeaker = false, speakerColor = "text-gray-400" }) => {
                 if (!text) return null;
                 const lines = text.split('\n');
@@ -152,7 +65,6 @@
                 return (
                     <>
                         {lines.map((line, lineIndex) => {
-                            // 提取純日文部分供朗讀 (移除括號翻譯)
                             const japanesePart = line.split('(')[0].split('（')[0]; 
 
                             const regex = /([\u4e00-\u9faf々]+)\[(.*?)\]/g;
@@ -190,7 +102,7 @@
                                             <Volume2 size={16} />
                                         </button>
                                     )}
-                                    <span className="block flex-1">
+                                    <span className="block flex-1 leading-relaxed">
                                         {parts}
                                     </span>
                                 </div>
@@ -200,518 +112,63 @@
                 );
             };
 
-            // Data - Complete list for Lesson 27
+            // Data - 使用本地圖片路徑 (images/vocab_{id}.jpg)
             const vocabularyList = [
-                { 
-                    id: 1, 
-                    kanji: "飼[か]います", 
-                    reading: "かいます", 
-                    meaning: "養 (寵物)", 
-                    example: "ペットを飼[か]っている (正在養寵物)\n放[はな]し飼[が]い (放養)\n飼育[しいく] (飼養)\n飼料[しりょう] (飼料)", 
-                    imagePrompt: "anime style, cute girl feeding a small puppy in a warm sunny garden, studio ghibli art style, detailed, soft lighting", 
-                    color: "bg-orange-50",
-                    accentColor: "text-orange-600",
-                    borderColor: "border-orange-200"
-                },
-                { 
-                    id: 2, 
-                    kanji: "走[はし]ります", 
-                    reading: "はしります", 
-                    meaning: "跑 / 行駛", 
-                    example: "道[みち]を走[はし]る (在路上跑)\nトップを走[はし]る (跑第一)\n敵陣[てきじん]に走[はし]る (投奔敵營)\n背中[せなか]に痛[いた]みが走[はし]る (背部一陣劇痛竄過)\n極端[きょくたん]に走[はし]る (走極端)\n奔走[ほんそう] (奔走/四處忙碌)\n走塁[そうるい] (跑壘)\n走者一掃[そうしゃいっそう] (清壘)", 
-                    imagePrompt: "anime style, energetic boy running fast on a track, dynamic action pose, speed lines, sports anime aesthetic, determination", 
-                    color: "bg-blue-50",
-                    accentColor: "text-blue-600",
-                    borderColor: "border-blue-200"
-                },
-                { 
-                    id: 3, 
-                    kanji: "見[み]えます", 
-                    reading: "みえます", 
-                    meaning: "看得見 (自然進入眼簾)", 
-                    example: "富士山[ふじさん]が見[み]える (看得見富士山)\n目[め]に見[み]えて良[よ]くなった (肉眼可見地變好)\n解決[かいけつ]したかに見[み]える (看起來似乎解決了)\n先生[せんせい]が見[み]えたよ (老師來了-敬語)", 
-                    imagePrompt: "anime style, beautiful view of Mount Fuji from a distance, blue sky, cherry blossoms, makoto shinkai art style, scenic", 
-                    color: "bg-sky-50",
-                    accentColor: "text-sky-600",
-                    borderColor: "border-sky-200"
-                },
-                { 
-                    id: 4, 
-                    kanji: "聞[き]こえます", 
-                    reading: "きこえます", 
-                    meaning: "聽得見 (聲音自然傳入)", 
-                    example: "微[かす]かに聞[き]こえる (隱約聽見)\n人[ひと]の声[こえ]が聞[き]こえる (聽見人的聲音)\n彼[かれ]の発言[はつげん]は皮肉[ひにく]に聞[き]こえる (聽起來很諷刺)", 
-                    imagePrompt: "anime style, girl listening to birds singing in a forest, hand cupping ear, peaceful nature, kyoto animation style, soft green", 
-                    color: "bg-green-50",
-                    accentColor: "text-green-600",
-                    borderColor: "border-green-200"
-                },
-                { 
-                    id: 5, 
-                    kanji: "できます", 
-                    reading: "できます", 
-                    meaning: "完工 / 建成 / 產生", 
-                    example: "駅前[えきまえ]に新[あたら]しい店[みせ]ができた (車站前開了新店)\n免疫[めんえき]ができる (產生免疫力)\n耳[みみ]にたこができる (耳朵長繭了/聽膩了)\n木[き]でできている (用木頭做成的)\n出来物[できもの] (腫包)", 
-                    imagePrompt: "anime style, grand opening of a cute bakery shop, flowers, balloons, happy atmosphere, slice of life anime", 
-                    color: "bg-yellow-50",
-                    accentColor: "text-yellow-600",
-                    borderColor: "border-yellow-200"
-                },
-                { 
-                    id: 6, 
-                    kanji: "開[ひら]きます", 
-                    reading: "ひらきます", 
-                    meaning: "舉辦 / 開(班) / 張開", 
-                    example: "料理教室[りょうりきょうしつ]を開[ひら]く (開料理教室)\n花[はな]が開[ひら]く (花開了)\n銀行[ぎんこう]が開[ひら]く (銀行開門營業)\n本[ほん]を開[ひら]く (打開書)\n心[こころ]を開[ひら]く (敞開心房)\n店[みせ]を開[ひら]く (開店)\n両開[りょうびら]き (雙開)\n店開[みせびら]き (開店/開張)\n海開[うみびら]き (海水浴場開放)", 
-                    imagePrompt: "anime style, flowers blooming magically, sparkles, open book, warm light, shoujo anime art style", 
-                    color: "bg-rose-50",
-                    accentColor: "text-rose-600",
-                    borderColor: "border-rose-200"
-                },
-                { 
-                    id: 7, 
-                    kanji: "心配[しんぱい]", 
-                    reading: "しんぱい", 
-                    meaning: "擔心", 
-                    example: "将来[しょうらい]のことを心配[しんぱい]する (擔心將來的事)\n心配[しんぱい]を掛[か]ける (讓人擔心)\n心配[しんぱい]ない (沒問題/不用擔心)", 
-                    imagePrompt: "anime style, young character looking worried while holding a letter, emotional expression, soft lighting, slice of life", 
-                    color: "bg-gray-50",
-                    accentColor: "text-gray-600",
-                    borderColor: "border-gray-200"
-                },
-                { 
-                    id: 8, 
-                    kanji: "ペット", 
-                    reading: "ペット", 
-                    meaning: "寵物", 
-                    example: "ペットと散歩[さんぽ]する (帶寵物散步)\nペットショップ (寵物店)\nペットホテル (寵物旅館)", 
-                    imagePrompt: "anime style, cheerful girl hugging a cute fluffy dog and a cat, happy atmosphere, pastel colors", 
-                    color: "bg-orange-50",
-                    accentColor: "text-orange-600",
-                    borderColor: "border-orange-200"
-                },
-                { 
-                    id: 9, 
-                    kanji: "鳥[とり]", 
-                    reading: "とり", 
-                    meaning: "鳥", 
-                    example: "空[そら]を飛[と]んでいる鳥[とり] (在空中飛的鳥)\n焼[や]き鳥[とり] (烤雞串)\n鶏[にわとり]＝庭鳥[にわとり] (雞)\n養鶏場[ようけいじょう] (養雞場)\n鳥[とり]インフルエンザ (禽流感)", 
-                    imagePrompt: "anime style, white birds flying in a vast blue sky, freedom, studio ghibli clouds, high detail", 
-                    color: "bg-cyan-50",
-                    accentColor: "text-cyan-600",
-                    borderColor: "border-cyan-200"
-                },
-                { 
-                    id: 10, 
-                    kanji: "声[こえ]", 
-                    reading: "こえ", 
-                    meaning: "聲音 (人或動物)", 
-                    example: "大[おお]きな声[こえ] (大聲)\n声[こえ]を掛[か]ける (打招呼)\n声[こえ]が掠[かす]れる (沙啞)\n不満[ふまん]の声[こえ]が上[あ]がる (不滿聲四起)\n裏声[うらごえ] (假音)\n地声[じごえ] (真音)", 
-                    imagePrompt: "anime style, girl singing loudly on stage, musical notes floating, shiny microphone, idol anime style, vibrant", 
-                    color: "bg-purple-50",
-                    accentColor: "text-purple-600",
-                    borderColor: "border-purple-200"
-                },
-                { 
-                    id: 11, 
-                    kanji: "波[なみ]", 
-                    reading: "なみ", 
-                    meaning: "波浪", 
-                    example: "波[なみ]の音[おと] (海浪聲)\n人[ひと]の波[なみ] (人海)\n景気回復[けいきかいふく]の波[なみ]に乗[の]る (順應景氣復甦)\n甍[いらか]の波[なみ] (屋瓦波浪)\n波浪注意報[はろうちゅういほう] (波浪警報)\n波紋[はもん]が生[しょう]じ (產生波紋/風波)", 
-                    imagePrompt: "anime style, ocean waves crashing on a beach at sunset, sparkling water, emotional scenery, detailed water", 
-                    color: "bg-indigo-50",
-                    accentColor: "text-indigo-600",
-                    borderColor: "border-indigo-200"
-                },
-                { 
-                    id: 12, 
-                    kanji: "花火[はなび]", 
-                    reading: "はなび", 
-                    meaning: "煙火", 
-                    example: "夏[なつ]の花火大会[はなびたいかい] (夏季煙火大會)\n線香花火[せんこうはなび] (仙女棒)\n打[う]ち上[あ]げ花火[はなび] (高空煙火)", 
-                    imagePrompt: "anime style, beautiful fireworks in night sky, characters in yukata watching, summer festival, colorful illumination", 
-                    color: "bg-red-50",
-                    accentColor: "text-red-600",
-                    borderColor: "border-red-200"
-                },
-                { 
-                    id: 13, 
-                    kanji: "道具[どうぐ]", 
-                    reading: "どうぐ", 
-                    meaning: "工具 / 道具", 
-                    example: "大工[だいく]の道具[どうぐ] (木匠的工具)\n釣[つ]りの道具[どうぐ] (釣具)\n知識[ちしき]を出世[しゅっせ]の道具[どうぐ]にする (把知識當作升遷工具)", 
-                    imagePrompt: "anime style, various tools on a wooden workbench, hammer, wrench, detailed objects, warm workshop lighting", 
-                    color: "bg-stone-50",
-                    accentColor: "text-stone-600",
-                    borderColor: "border-stone-200"
-                },
-                { 
-                    id: 14, 
-                    kanji: "クリーニング", 
-                    reading: "クリーニング", 
-                    meaning: "乾洗 / 洗衣", 
-                    example: "スーツをクリーニングに出[だ]す (把西裝拿去送洗)\nドライクリーニング (乾洗)\nクリーニング店[てん] (洗衣店)", 
-                    imagePrompt: "anime style, clean folded shirts and suits in plastic covers, laundry shop interior, bright and tidy", 
-                    color: "bg-blue-50",
-                    accentColor: "text-blue-500",
-                    borderColor: "border-blue-200"
-                },
-                { 
-                    id: 15, 
-                    kanji: "家[いえ]", 
-                    reading: "いえ", 
-                    meaning: "家", 
-                    example: "家[いえ]を建[た]てる (蓋房子)\n家[いえ]に帰[かえ]る (回家)\n自分[じぶん]の家[いえ] (自己的家)", 
-                    imagePrompt: "anime style, cozy japanese house exterior, sunset, warm lights coming from windows, welcoming atmosphere", 
-                    color: "bg-orange-50",
-                    accentColor: "text-orange-700",
-                    borderColor: "border-orange-200"
-                },
-                { 
-                    id: 16, 
-                    kanji: "マンション", 
-                    reading: "マンション", 
-                    meaning: "公寓 / 大樓", 
-                    example: "高層[こうそう]マンションに住[す]む (住在高層公寓)\nマンションの管理費[かんりひ] (公寓管理費)", 
-                    imagePrompt: "anime style, modern high-rise apartment building in tokyo, blue sky, city life", 
-                    color: "bg-slate-50",
-                    accentColor: "text-slate-600",
-                    borderColor: "border-slate-200"
-                },
-                { 
-                    id: 17, 
-                    kanji: "キッチン", 
-                    reading: "キッチン", 
-                    meaning: "廚房", 
-                    example: "広[ひろ]いキッチン (寬敞的廚房)\nシステムキッチン (系統廚具)\n台所[だいどころ] (傳統廚房說法)", 
-                    imagePrompt: "anime style, modern clean kitchen with cooking utensils, sunlight streaming in, cozy cooking space", 
-                    color: "bg-yellow-50",
-                    accentColor: "text-yellow-600",
-                    borderColor: "border-yellow-200"
-                },
-                { 
-                    id: 18, 
-                    kanji: "～教室[きょうしつ]", 
-                    reading: "きょうしつ", 
-                    meaning: "～教室 (才藝班)", 
-                    example: "ピアノ教室[きょうしつ] (鋼琴教室)\n体操教室[たいそうきょうしつ] (體操教室)\n学習塾[がくしゅうじゅく] (補習班)\n英会話[えいかいわ]スクール (英語補習班)", 
-                    imagePrompt: "anime style, japanese classroom with desks and chalkboard, sunlight coming through window, nostalgic school life", 
-                    color: "bg-pink-50",
-                    accentColor: "text-pink-600",
-                    borderColor: "border-pink-200"
-                },
-                { 
-                    id: 19, 
-                    kanji: "パーティールーム", 
-                    reading: "パーティールーム", 
-                    meaning: "派對室", 
-                    example: "マンションのパーティールームを予約[よやく]する (預約公寓的派對室)\n誕生日[たんじょうび]パーティー (生日派對)", 
-                    imagePrompt: "anime style, decorated party room with balloons and streamers, festive atmosphere, colorful", 
-                    color: "bg-fuchsia-50",
-                    accentColor: "text-fuchsia-600",
-                    borderColor: "border-fuchsia-200"
-                },
-                { 
-                    id: 20, 
-                    kanji: "方[かた]", 
-                    reading: "かた", 
-                    meaning: "位 (人的敬稱)", 
-                    example: "あの方[かた]はどなたですか (那位是誰？)\n先生[せんせい]の方[かた] (各位老師)\nお店[みせ]の方[かた] (店員)", 
-                    imagePrompt: "anime style, elegant person silhouette, polite gesture, respectful atmosphere, soft focus", 
-                    color: "bg-zinc-50",
-                    accentColor: "text-zinc-600",
-                    borderColor: "border-zinc-200"
-                },
-                { 
-                    id: 21, 
-                    kanji: "～後[ご]", 
-                    reading: "ご", 
-                    meaning: "～後 (時間/期間)", 
-                    example: "3年後[さんねんご] (三年後)\n授業後[じゅぎょうご] (下課後)\n後[のち]ほど (稍後)", 
-                    imagePrompt: "anime style, clock showing time passing, calendar pages turning, future concept, blue tones", 
-                    color: "bg-blue-50",
-                    accentColor: "text-blue-800",
-                    borderColor: "border-blue-200"
-                },
-                { 
-                    id: 22, 
-                    kanji: "～しか", 
-                    reading: "～しか", 
-                    meaning: "只～ (後接否定)", 
-                    example: "50円[えん]しか持[も]っていない (只有50元-太少了)\nやるなら今[いま]しかない (要使用的話現在是唯一機會)\nあなたにしか教[おし]えない (只告訴你)", 
-                    imagePrompt: "anime style, character looking at a single coin in hand, sad expression, empty wallet, dramatic lighting", 
-                    color: "bg-gray-50",
-                    accentColor: "text-gray-600",
-                    borderColor: "border-gray-200"
-                },
-                { 
-                    id: 23, 
-                    kanji: "他[ほか]の", 
-                    reading: "ほかの", 
-                    meaning: "其他的", 
-                    example: "他[ほか]の店[みせ]に行[い]こう (去別家店吧)\n他[ほか]にはない品揃[しなぞろ]え (別處沒有的商品陣容)\n他[ほか]に漏[も]らすな (別洩漏給別人)\n思[おも]いの外[ほか]の重傷[じゅうしょう]だ (出乎意料的重傷)", 
-                    imagePrompt: "anime style, character standing at crossroads looking at different paths, adventure, decision making, fantasy landscape", 
-                    color: "bg-teal-50",
-                    accentColor: "text-teal-600",
-                    borderColor: "border-teal-200"
-                },
-                { 
-                    id: 24, 
-                    kanji: "はっきり", 
-                    reading: "はっきり", 
-                    meaning: "清楚地 / 明確地", 
-                    example: "はっきり見[み]える (看得一清二楚)\n好[す]き嫌[きら]いがはっきりした人[ひと] (愛恨分明的人)\n二日酔[ふつかよ]いで頭[あたま]がはっきりしない (因為宿醉頭腦不清)", 
-                    imagePrompt: "anime style, putting on glasses, world becoming clear and sharp, focus effect, bright eyes", 
-                    color: "bg-emerald-50",
-                    accentColor: "text-emerald-600",
-                    borderColor: "border-emerald-200"
-                },
-                { 
-                    id: 25, 
-                    kanji: "家具[かぐ]", 
-                    reading: "かぐ", 
-                    meaning: "家具", 
-                    example: "家具[かぐ]を揃[そろ]える (備齊家具)\n家具屋[かぐや] (家具店)\n輸入家具[ゆにゅうかぐ] (進口家具)", 
-                    imagePrompt: "anime style, nicely arranged living room with sofa, table and shelves, interior design, cozy home", 
-                    color: "bg-amber-50",
-                    accentColor: "text-amber-700",
-                    borderColor: "border-amber-200"
-                },
-                { 
-                    id: 26, 
-                    kanji: "本棚[ほんだな]", 
-                    reading: "ほんだな", 
-                    meaning: "書架", 
-                    example: "本棚[ほんだな]に本[ほん]を並[なら]べる (把書排列在書架上)\n整理整頓[せいりせいとん] (整理整頓)", 
-                    imagePrompt: "anime style, tall wooden bookshelf filled with colorful books, library atmosphere, quiet study room", 
-                    color: "bg-orange-50",
-                    accentColor: "text-orange-800",
-                    borderColor: "border-orange-200"
-                },
-                { 
-                    id: 27, 
-                    kanji: "いつか", 
-                    reading: "いつか", 
-                    meaning: "遲早 / 總有一天", 
-                    example: "いつか日本[にほん]へ行[い]きたい (總有一天想去日本)\nいつか夢[ゆめ]が叶[かな]う (夢想終會實現)", 
-                    imagePrompt: "anime style, character looking at distant horizon with hope, sunrise, dreams, future concept", 
-                    color: "bg-sky-50",
-                    accentColor: "text-sky-500",
-                    borderColor: "border-sky-200"
-                },
-                { 
-                    id: 28, 
-                    kanji: "建[た]てます", 
-                    reading: "たてます", 
-                    meaning: "建造 / 蓋", 
-                    example: "家[いえ]を建[た]てる (蓋房子)\nビルが建[た]つ (大樓蓋起來 - 自動詞)\n記念碑[きねんひ]を建[た]てる (建立紀念碑)", 
-                    imagePrompt: "anime style, construction site of a new house, blueprints, hard hat, progress", 
-                    color: "bg-stone-50",
-                    accentColor: "text-stone-600",
-                    borderColor: "border-stone-200"
-                },
-                { 
-                    id: 29, 
-                    kanji: "素晴[すば]らしい", 
-                    reading: "すばらしい", 
-                    meaning: "極好的 / 很棒的", 
-                    example: "素晴[すば]らしい景色[けしき] (絕景)\n素晴[すば]らしい演奏[えんそう] (精彩的演奏)\nワンダフル (Wonderful)", 
-                    imagePrompt: "anime style, character with sparkling eyes looking at something amazing, starry background, awe expression", 
-                    color: "bg-yellow-50",
-                    accentColor: "text-yellow-500",
-                    borderColor: "border-yellow-200"
-                },
-                { 
-                    id: 30, 
-                    kanji: "子[こ]どもたち", 
-                    reading: "こどもたち", 
-                    meaning: "孩子們", 
-                    example: "子[こ]どもたちが遊[あそ]んでいる (孩子們在玩耍)\n未来[みらい]の子[こ]どもたち (未來的孩子們)", 
-                    imagePrompt: "anime style, group of happy children playing in a park, running, laughing, sunny day", 
-                    color: "bg-green-50",
-                    accentColor: "text-green-500",
-                    borderColor: "border-green-200"
-                },
-                { 
-                    id: 31, 
-                    kanji: "大好[だいす]き", 
-                    reading: "だいすき", 
-                    meaning: "非常喜歡", 
-                    example: "アニメが大好[だいす]きです (非常喜歡動漫)\n大好[だいす]きな人[ひと] (最喜歡的人)", 
-                    imagePrompt: "anime style, girl holding a giant heart, blushing, hearts background, love confession scene", 
-                    color: "bg-pink-50",
-                    accentColor: "text-pink-500",
-                    borderColor: "border-pink-200"
-                },
-                { 
-                    id: 32, 
-                    kanji: "主人公[しゅじんこう]", 
-                    reading: "しゅじんこう", 
-                    meaning: "主角 / 主人翁", 
-                    example: "物語[ものがたり]の主人公[しゅじんこう] (故事的主角)\nゲームの主人公[しゅじんこう] (遊戲主角)", 
-                    imagePrompt: "anime style, cool hero character standing in spotlight, epic pose, cape flowing, fantasy background", 
-                    color: "bg-red-50",
-                    accentColor: "text-red-600",
-                    borderColor: "border-red-200"
-                },
-                { 
-                    id: 33, 
-                    kanji: "形[かたち]", 
-                    reading: "かたち", 
-                    meaning: "形狀 / 樣子", 
-                    example: "変[か]わった形[かたち] (奇怪的形狀)\n愛[あい]の形[かたち] (愛的形式)\n形[かたち]を整[ととの]える (整頓外型)", 
-                    imagePrompt: "anime style, geometric shapes floating, abstract art, puzzle pieces fitting together, creative", 
-                    color: "bg-indigo-50",
-                    accentColor: "text-indigo-500",
-                    borderColor: "border-indigo-200"
-                },
-                { 
-                    id: 34, 
-                    kanji: "不思議[ふしぎ]", 
-                    reading: "ふしぎ", 
-                    meaning: "不可思議 / 奇怪", 
-                    example: "不思議[ふしぎ]な話[はなし] (不可思議的故事)\n世界[せかい]の七不思議[ななふしぎ] (世界七大奇蹟)\n事故[じこ]が起[お]こっても不思議[ふしぎ]ではない (發生事故也不奇怪)\n摩訶不思議[まかふしぎ] (非常不可思議)", 
-                    imagePrompt: "anime style, magical floating book, glowing mysterious runes, fantasy library, purple magic aura", 
-                    color: "bg-violet-50",
-                    accentColor: "text-violet-600",
-                    borderColor: "border-violet-200"
-                },
-                { 
-                    id: 35, 
-                    kanji: "ポケット", 
-                    reading: "ポケット", 
-                    meaning: "口袋", 
-                    example: "ポケットに手[て]を入[い]れる (把手放進口袋)\n四次元[よじげん]ポケット (四次元口袋 - 哆啦A夢)", 
-                    imagePrompt: "anime style, close up of a denim jeans pocket, hand reaching in, casual fashion detail", 
-                    color: "bg-blue-50",
-                    accentColor: "text-blue-600",
-                    borderColor: "border-blue-200"
-                },
-                { 
-                    id: 36, 
-                    kanji: "例[たと]えば", 
-                    reading: "たとえば", 
-                    meaning: "例如", 
-                    example: "例[たと]えば、こんな場合[ばあい] (例如，這種情況)\n例[たと]え話[ばなし] (比喻/例話)", 
-                    imagePrompt: "anime style, teacher pointing at blackboard with examples, classroom setting, explanation", 
-                    color: "bg-teal-50",
-                    accentColor: "text-teal-600",
-                    borderColor: "border-teal-200"
-                },
-                { 
-                    id: 37, 
-                    kanji: "付[つ]けます", 
-                    reading: "つけます", 
-                    meaning: "戴上 / 縫上 / 塗抹", 
-                    example: "ボタンを付[つ]ける (縫鈕扣)\n服[ふく]にボタンをつける (把鈕扣縫在衣服上)\n仮面[かめん]をつけて演[えん]じる (戴著面具演戲)\n改革[かいかく]に手[て]をつける (著手進行改革)\n名前[なまえ]をつける (取名字)", 
-                    imagePrompt: "anime style, close up of hands sewing a button, needle and thread, cozy detailed art, slice of life", 
-                    color: "bg-red-50",
-                    accentColor: "text-red-600",
-                    borderColor: "border-red-200"
-                },
-                { 
-                    id: 38, 
-                    kanji: "自由[じゆう]に", 
-                    reading: "じゆうに", 
-                    meaning: "自由地 / 隨意地", 
-                    example: "自由[じゆう]に意見[いけん]を言[い]う (自由發表意見)\n自由[じゆう]に使[つか]ってください (請隨意使用)\n自由[じゆう]の女神[めがみ] (自由女神)", 
-                    imagePrompt: "anime style, bird flying out of a cage, open sky, feather floating, symbol of freedom", 
-                    color: "bg-sky-50",
-                    accentColor: "text-sky-600",
-                    borderColor: "border-sky-200"
-                },
-                { 
-                    id: 39, 
-                    kanji: "空[そら]", 
-                    reading: "そら", 
-                    meaning: "天空", 
-                    example: "青[あお]い空[そら] (藍天)\n青空[あおぞら] (藍天)\n青空駐車[あおぞらちゅうしゃ] (露天停車)", 
-                    imagePrompt: "anime style, vast blue sky with huge white clouds, summer vibe, makoto shinkai style clouds, bright", 
-                    color: "bg-sky-100",
-                    accentColor: "text-sky-700",
-                    borderColor: "border-sky-300"
-                },
-                { 
-                    id: 40, 
-                    kanji: "飛[と]びます", 
-                    reading: "とびます", 
-                    meaning: "飛", 
-                    example: "飛行機[ひこうき]が飛[と]ぶ (飛機飛行)\n午後[ごご]の便[びん]で日本[にほん]に飛[と]ぶ (搭下午的班機飛往日本)\n台風[たいふう]で瓦[かわら]が飛[と]んだ (因為颱風，瓦片飛走了)\n川[かわ]を飛[と]んで渡[わた]る (飛躍渡河)\n話[はなし]が飛[と]ぶ (離題)", 
-                    imagePrompt: "anime style, airplane flying high above clouds, sunlight, travel, sense of freedom, blue sky", 
-                    color: "bg-blue-100",
-                    accentColor: "text-blue-700",
-                    borderColor: "border-blue-300"
-                },
-                { 
-                    id: 41, 
-                    kanji: "昔[むかし]", 
-                    reading: "むかし", 
-                    meaning: "從前 / 古時候", 
-                    example: "昔[むかし]の遊[あそ]び (以前的遊戲)\n昔話[むかしばなし] (民間故事)\n城下町[じょうかまち]と言[い]っても、昔[むかし]の面影[おもかげ]はない (雖說是城下町，但已無往日風貌)", 
-                    imagePrompt: "anime style, old japanese village, sepia tone, nostalgia, traditional houses, sunset, historical atmosphere", 
-                    color: "bg-amber-50",
-                    accentColor: "text-amber-600",
-                    borderColor: "border-amber-200"
-                },
-                { 
-                    id: 42, 
-                    kanji: "自分[じぶん]", 
-                    reading: "じぶん", 
-                    meaning: "自己", 
-                    example: "自分[じぶん]でやる (自己做)\n自分[じぶん]の部屋[へや] (自己的房間)\n自分[じぶん]勝手[かって] (任性)", 
-                    imagePrompt: "anime style, character looking into a mirror reflection, introspection, quiet atmosphere", 
-                    color: "bg-purple-50",
-                    accentColor: "text-purple-600",
-                    borderColor: "border-purple-200"
-                },
-                { 
-                    id: 43, 
-                    kanji: "将来[しょうらい]", 
-                    reading: "しょうらい", 
-                    meaning: "將來", 
-                    example: "将来[しょうらい]の夢[ゆめ] (將來的夢想)\n近[ちか]い将来[しょうらい] (不久的將來)", 
-                    imagePrompt: "anime style, character looking at a futuristic city skyline, sci-fi elements, hope, visionary", 
-                    color: "bg-cyan-50",
-                    accentColor: "text-cyan-600",
-                    borderColor: "border-cyan-200"
-                },
-                { 
-                    id: 44, 
-                    kanji: "ドラえもん", 
-                    reading: "ドラえもん", 
-                    meaning: "哆啦A夢", 
-                    example: "ドラえもんはネコ型[がた]ロボットです (哆啦A夢是貓型機器人)\nドラえもんの道具[どうぐ] (哆啦A夢的道具)", 
-                    imagePrompt: "anime style, blue cat robot round figure, red nose, bell, futuristic gadget, cartoon style", 
-                    color: "bg-blue-50",
-                    accentColor: "text-blue-500",
-                    borderColor: "border-blue-200"
-                }
+                { id: 1, kanji: "飼[か]います", reading: "かいます", meaning: "養 (寵物)", example: "ペットを飼[か]っている (正在養寵物)\n放[はな]し飼[が]い (放養)\n飼育[しいく] (飼養)\n飼料[しりょう] (飼料)", color: "bg-orange-50", accentColor: "text-orange-600", borderColor: "border-orange-200" },
+                { id: 2, kanji: "走[はし]ります", reading: "はしります", meaning: "跑 / 行駛", example: "道[みち]を走[はし]る (在路上跑)\nトップを走[はし]る (跑第一)\n敵陣[てきじん]に走[はし]る (投奔敵營)\n背中[せなか]に痛[いた]みが走[はし]る (背部一陣劇痛竄過)\n極端[きょくたん]に走[はし]る (走極端)\n奔走[ほんそう] (奔走/四處忙碌)\n走塁[そうるい] (跑壘)\n走者一掃[そうしゃいっそう] (清壘)", color: "bg-blue-50", accentColor: "text-blue-600", borderColor: "border-blue-200" },
+                { id: 3, kanji: "見[み]えます", reading: "みえます", meaning: "看得見 (自然進入眼簾)", example: "富士山[ふじさん]が見[み]える (看得見富士山)\n目[め]に見[み]えて良[よ]くなった (肉眼可見地變好)\n解決[かいけつ]したかに見[み]える (看起來似乎解決了)\n先生[せんせい]が見[み]えたよ (老師來了-敬語)", color: "bg-sky-50", accentColor: "text-sky-600", borderColor: "border-sky-200" },
+                { id: 4, kanji: "聞[き]こえます", reading: "きこえます", meaning: "聽得見 (聲音自然傳入)", example: "微[かす]かに聞[き]こえる (隱約聽見)\n人[ひと]の声[こえ]が聞[き]こえる (聽見人的聲音)\n彼[かれ]の発言[はつげん]は皮肉[ひにく]に聞[き]こえる (聽起來很諷刺)", color: "bg-green-50", accentColor: "text-green-600", borderColor: "border-green-200" },
+                { id: 5, kanji: "できます", reading: "できます", meaning: "完工 / 建成 / 產生", example: "駅前[えきまえ]に新[あたら]しい店[みせ]ができた (車站前開了新店)\n免疫[めんえき]ができる (產生免疫力)\n耳[みみ]にたこができる (耳朵長繭了/聽膩了)\n木[き]でできている (用木頭做成的)\n出来物[できもの] (腫包)", color: "bg-yellow-50", accentColor: "text-yellow-600", borderColor: "border-yellow-200" },
+                { id: 6, kanji: "開[ひら]きます", reading: "ひらきます", meaning: "舉辦 / 開(班) / 張開", example: "料理教室[りょうりきょうしつ]を開[ひら]く (開料理教室)\n花[はな]が開[ひら]く (花開了)\n銀行[ぎんこう]が開[ひら]く (銀行開門營業)\n本[ほん]を開[ひら]く (打開書)\n心[こころ]を開[ひら]く (敞開心房)\n店[みせ]を開[ひら]く (開店)\n両開[りょうびら]き (雙開)\n店開[みせびら]き (開店/開張)\n海開[うみびら]き (海水浴場開放)", color: "bg-rose-50", accentColor: "text-rose-600", borderColor: "border-rose-200" },
+                { id: 7, kanji: "心配[しんぱい]", reading: "しんぱい", meaning: "擔心", example: "将来[しょうらい]のことを心配[しんぱい]する (擔心將來的事)\n心配[しんぱい]を掛[か]ける (讓人擔心)\n心配[しんぱい]ない (沒問題/不用擔心)", color: "bg-gray-50", accentColor: "text-gray-600", borderColor: "border-gray-200" },
+                { id: 8, kanji: "ペット", reading: "ペット", meaning: "寵物", example: "ペットと散歩[さんぽ]する (帶寵物散步)\nペットショップ (寵物店)\nペットホテル (寵物旅館)", color: "bg-orange-50", accentColor: "text-orange-600", borderColor: "border-orange-200" },
+                { id: 9, kanji: "鳥[とり]", reading: "とり", meaning: "鳥", example: "空[そら]を飛[と]んでいる鳥[とり] (在空中飛的鳥)\n焼[や]き鳥[とり] (烤雞串)\n鶏[にわとり]＝庭鳥[にわとり] (雞)\n養鶏場[ようけいじょう] (養雞場)\n鳥[とり]インフルエンザ (禽流感)", color: "bg-cyan-50", accentColor: "text-cyan-600", borderColor: "border-cyan-200" },
+                { id: 10, kanji: "声[こえ]", reading: "こえ", meaning: "聲音 (人或動物)", example: "大[おお]きな声[こえ] (大聲)\n声[こえ]を掛[か]ける (打招呼)\n声[こえ]が掠[かす]れる (沙啞)\n不満[ふまん]の声[こえ]が上[あ]がる (不滿聲四起)\n裏声[うらごえ] (假音)\n地声[じごえ] (真音)", color: "bg-purple-50", accentColor: "text-purple-600", borderColor: "border-purple-200" },
+                { id: 11, kanji: "波[なみ]", reading: "なみ", meaning: "波浪", example: "波[なみ]の音[おと] (海浪聲)\n人[ひと]の波[なみ] (人海)\n景気回復[けいきかいふく]の波[なみ]に乗[の]る (順應景氣復甦)\n甍[いらか]の波[なみ] (屋瓦波浪)\n波浪注意報[はろうちゅういほう] (波浪警報)\n波紋[はもん]が生[しょう]じ (產生波紋/風波)", color: "bg-indigo-50", accentColor: "text-indigo-600", borderColor: "border-indigo-200" },
+                { id: 12, kanji: "花火[はなび]", reading: "はなび", meaning: "煙火", example: "夏[なつ]の花火大会[はなびたいかい] (夏季煙火大會)\n線香花火[せんこうはなび] (仙女棒)\n打[う]ち上[あ]げ花火[はなび] (高空煙火)", color: "bg-red-50", accentColor: "text-red-600", borderColor: "border-red-200" },
+                { id: 13, kanji: "道具[どうぐ]", reading: "どうぐ", meaning: "工具 / 道具", example: "大工[だいく]の道具[どうぐ] (木匠的工具)\n釣[つ]りの道具[どうぐ] (釣具)\n知識[ちしき]を出世[しゅっせ]の道具[どうぐ]にする (把知識當作升遷工具)", color: "bg-stone-50", accentColor: "text-stone-600", borderColor: "border-stone-200" },
+                { id: 14, kanji: "クリーニング", reading: "クリーニング", meaning: "乾洗 / 洗衣", example: "スーツをクリーニングに出[だ]す (把西裝拿去送洗)\nドライクリーニング (乾洗)\nクリーニング店[てん] (洗衣店)", color: "bg-blue-50", accentColor: "text-blue-500", borderColor: "border-blue-200" },
+                { id: 15, kanji: "家[いえ]", reading: "いえ", meaning: "家", example: "家[いえ]を建[た]てる (蓋房子)\n家[いえ]に帰[かえ]る (回家)\n自分[じぶん]の家[いえ] (自己的家)", color: "bg-orange-50", accentColor: "text-orange-700", borderColor: "border-orange-200" },
+                { id: 16, kanji: "マンション", reading: "マンション", meaning: "公寓 / 大樓", example: "高層[こうそう]マンションに住[す]む (住在高層公寓)\nマンションの管理費[かんりひ] (公寓管理費)", color: "bg-slate-50", accentColor: "text-slate-600", borderColor: "border-slate-200" },
+                { id: 17, kanji: "キッチン", reading: "キッチン", meaning: "廚房", example: "広[ひろ]いキッチン (寬敞的廚房)\nシステムキッチン (系統廚具)\n台所[だいどころ] (傳統廚房說法)", color: "bg-yellow-50", accentColor: "text-yellow-600", borderColor: "border-yellow-200" },
+                { id: 18, kanji: "教室[きょうしつ]", reading: "きょうしつ", meaning: "～教室 (才藝班)", example: "ピアノ教室[きょうしつ] (鋼琴教室)\n体操教室[たいそうきょうしつ] (體操教室)\n学習塾[がくしゅうじゅく] (補習班)\n英会話[えいかいわ]スクール (英語補習班)", color: "bg-pink-50", accentColor: "text-pink-600", borderColor: "border-pink-200" },
+                { id: 19, kanji: "パーティールーム", reading: "パーティールーム", meaning: "派對室", example: "マンションのパーティールームを予約[よやく]する (預約公寓的派對室)\n誕生日[たんじょうび]パーティー (生日派對)", color: "bg-fuchsia-50", accentColor: "text-fuchsia-600", borderColor: "border-fuchsia-200" },
+                { id: 20, kanji: "方[かた]", reading: "かた", meaning: "位 (人的敬稱)", example: "あの方[かた]はどなたですか (那位是誰？)\n先生[せんせい]の方[かた] (各位老師)\nお店[みせ]の方[かた] (店員)", color: "bg-zinc-50", accentColor: "text-zinc-600", borderColor: "border-zinc-200" },
+                { id: 21, kanji: "～後[ご]", reading: "ご", meaning: "～後 (時間/期間)", example: "3年後[さんねんご] (三年後)\n授業後[じゅぎょうご] (下課後)\n後[のち]ほど (稍後)", color: "bg-blue-50", accentColor: "text-blue-800", borderColor: "border-blue-200" },
+                { id: 22, kanji: "～しか", reading: "～しか", meaning: "只～ (後接否定)", example: "50円[えん]しか持[も]っていない (只有50元-太少了)\nやるなら今[いま]しかない (要使用的話現在是唯一機會)\nあなたにしか教[おし]えない (只告訴你)", color: "bg-gray-50", accentColor: "text-gray-600", borderColor: "border-gray-200" },
+                { id: 23, kanji: "他の[ほかの]", reading: "ほかの", meaning: "其他的", example: "他[ほか]の店[みせ]に行[い]こう (去別家店吧)\n他[ほか]にはない品揃[しなぞろ]え (別處沒有的商品陣容)\n他[ほか]に漏[も]らすな (別洩漏給別人)\n思[おも]いの外[ほか]の重傷[じゅうしょう]だ (出乎意料的重傷)", color: "bg-teal-50", accentColor: "text-teal-600", borderColor: "border-teal-200" },
+                { id: 24, kanji: "はっきり", reading: "はっきり", meaning: "清楚地 / 明確地", example: "はっきり見[み]える (看得一清二楚)\n好[す]き嫌[きら]いがはっきりした人[ひと] (愛恨分明的人)\n二日酔[ふつかよ]いで頭[あたま]がはっきりしない (因為宿醉頭腦不清)", color: "bg-emerald-50", accentColor: "text-emerald-600", borderColor: "border-emerald-200" },
+                { id: 25, kanji: "家具[かぐ]", reading: "かぐ", meaning: "家具", example: "家具[かぐ]を揃[そろ]える (備齊家具)\n家具屋[かぐや] (家具店)\n輸入家具[ゆにゅうかぐ] (進口家具)", color: "bg-amber-50", accentColor: "text-amber-700", borderColor: "border-amber-200" },
+                { id: 26, kanji: "本棚[ほんだな]", reading: "ほんだな", meaning: "書架", example: "本棚[ほんだな]に本[ほん]を並[なら]べる (把書排列在書架上)\n整理整頓[せいりせいとん] (整理整頓)", color: "bg-orange-50", accentColor: "text-orange-800", borderColor: "border-orange-200" },
+                { id: 27, kanji: "いつか", reading: "いつか", meaning: "遲早 / 總有一天", example: "いつか日本[にほん]へ行[い]きたい (總有一天想去日本)\nいつか夢[ゆめ]が叶[かな]う (夢想終會實現)", color: "bg-sky-50", accentColor: "text-sky-500", borderColor: "border-sky-200" },
+                { id: 28, kanji: "建てます[たてます]", reading: "たてます", meaning: "建造 / 蓋", example: "家[いえ]を建[た]てる (蓋房子)\nビルが建[た]つ (大樓蓋起來 - 自動詞)\n記念碑[きねんひ]を建[た]てる (建立紀念碑)", color: "bg-stone-50", accentColor: "text-stone-600", borderColor: "border-stone-200" },
+                { id: 29, kanji: "素晴[すば]らしい", reading: "すばらしい", meaning: "極好的 / 很棒的", example: "素晴[すば]らしい景色[けしき] (絕景)\n素晴[すば]らしい演奏[えんそう] (精彩的演奏)\nワンダフル (Wonderful)", color: "bg-yellow-50", accentColor: "text-yellow-500", borderColor: "border-yellow-200" },
+                { id: 30, kanji: "子[こ]どもたち", reading: "こどもたち", meaning: "孩子們", example: "子[こ]どもたちが遊[あそ]んでいる (孩子們在玩耍)\n未来[みらい]の子[こ]どもたち (未來的孩子們)", color: "bg-green-50", accentColor: "text-green-500", borderColor: "border-green-200" },
+                { id: 31, kanji: "大好[だいす]き", reading: "だいすき", meaning: "非常喜歡", example: "アニメが大好[だいす]きです (非常喜歡動漫)\n大好[だいす]きな人[ひと] (最喜歡的人)", color: "bg-pink-50", accentColor: "text-pink-500", borderColor: "border-pink-200" },
+                { id: 32, kanji: "主人公[しゅじんこう]", reading: "しゅじんこう", meaning: "主角 / 主人翁", example: "物語[ものがたり]の主人公[しゅじんこう] (故事的主角)\nゲームの主人公[しゅじんこう] (遊戲主角)", color: "bg-red-50", accentColor: "text-red-600", borderColor: "border-red-200" },
+                { id: 33, kanji: "形[かたち]", reading: "かたち", meaning: "形狀 / 樣子", example: "変[か]わった形[かたち] (奇怪的形狀)\n愛[あい]の形[かたち] (愛的形式)\n形[かたち]を整[ととの]える (整頓外型)", color: "bg-indigo-50", accentColor: "text-indigo-500", borderColor: "border-indigo-200" },
+                { id: 34, kanji: "不思議[ふしぎ]", reading: "ふしぎ", meaning: "不可思議 / 奇怪", example: "不思議[ふしぎ]な話[はなし] (不可思議的故事)\n世界[せかい]の七不思議[ななふしぎ] (世界七大奇蹟)\n事故[じこ]が起[お]こっても不思議[ふしぎ]ではない (發生事故也不奇怪)\n摩訶不思議[まかふしぎ] (非常不可思議)", color: "bg-violet-50", accentColor: "text-violet-600", borderColor: "border-violet-200" },
+                { id: 35, kanji: "ポケット", reading: "ポケット", meaning: "口袋", example: "ポケットに手[て]を入[い]れる (把手放進口袋)\n四次元[よじげん]ポケット (四次元口袋 - 哆啦A夢)", color: "bg-blue-50", accentColor: "text-blue-600", borderColor: "border-blue-200" },
+                { id: 36, kanji: "例[たと]えば", reading: "たとえば", meaning: "例如", example: "例[たと]えば、こんな場合[ばあい] (例如，這種情況)\n例[たと]え話[ばなし] (比喻/例話)", color: "bg-teal-50", accentColor: "text-teal-600", borderColor: "border-teal-200" },
+                { id: 37, kanji: "付[つ]けます", reading: "つけます", meaning: "戴上 / 縫上 / 塗抹", example: "ボタンを付[つ]ける (縫鈕扣)\n服[ふく]にボタンをつける (把鈕扣縫在衣服上)\n仮面[かめん]をつけて演[えん]じる (戴著面具演戲)\n改革[かいかく]に手[て]をつける (著手進行改革)\n名前[なまえ]をつける (取名字)", color: "bg-red-50", accentColor: "text-red-600", borderColor: "border-red-200" },
+                { id: 38, kanji: "自由[じゆう]に", reading: "じゆうに", meaning: "自由地 / 隨意地", example: "自由[じゆう]に意見[いけん]を言[い]う (自由發表意見)\n自由[じゆう]に使[つか]ってください (請隨意使用)\n自由[じゆう]の女神[めがみ] (自由女神)", color: "bg-sky-50", accentColor: "text-sky-600", borderColor: "border-sky-200" },
+                { id: 39, kanji: "空[そら]", reading: "そら", meaning: "天空", example: "青[あお]い空[そら] (藍天)\n青空[あおぞら] (藍天)\n青空駐車[あおぞらちゅうしゃ] (露天停車)", color: "bg-sky-100", accentColor: "text-sky-700", borderColor: "border-sky-300" },
+                { id: 40, kanji: "飛[と]びます", reading: "とびます", meaning: "飛", example: "飛行機[ひこうき]が飛[と]ぶ (飛機飛行)\n午後[ごご]の便[びん]で日本[にほん]に飛[と]ぶ (搭下午的班機飛往日本)\n台風[たいふう]で瓦[かわら]が飛[と]んだ (因為颱風，瓦片飛走了)\n川[かわ]を飛[と]んで渡[わた]る (飛躍渡河)\n話[はなし]が飛[と]ぶ (離題)", color: "bg-blue-100", accentColor: "text-blue-700", borderColor: "border-blue-300" },
+                { id: 41, kanji: "昔[むかし]", reading: "むかし", meaning: "從前 / 古時候", example: "昔[むかし]の遊[あそ]び (以前的遊戲)\n昔話[むかしばなし] (民間故事)\n城下町[じょうかまち]と言[い]っても、昔[むかし]の面影[おもかげ]はない (雖說是城下町，但已無往日風貌)", color: "bg-amber-50", accentColor: "text-amber-600", borderColor: "border-amber-200" },
+                { id: 42, kanji: "自分[じぶん]", reading: "じぶん", meaning: "自己", example: "自分[じぶん]でやる (自己做)\n自分[じぶん]の部屋[へや] (自己的房間)\n自分[じぶん]勝手[かって] (任性)", color: "bg-purple-50", accentColor: "text-purple-600", borderColor: "border-purple-200" },
+                { id: 43, kanji: "将来[しょうらい]", reading: "しょうらい", meaning: "將來", example: "将来[しょうらい]の夢[ゆめ] (將來的夢想)\n近[ちか]い将来[しょうらい] (不久的將來)", color: "bg-cyan-50", accentColor: "text-cyan-600", borderColor: "border-cyan-200" },
+                { id: 44, kanji: "ドラえもん", reading: "ドラえもん", meaning: "哆啦A夢", example: "ドラえもんはネコ型[がた]ロボットです (哆啦A夢是貓型機器人)\nドラえもんの道具[どうぐ] (哆啦A夢的道具)", color: "bg-blue-50", accentColor: "text-blue-500", borderColor: "border-blue-200" }
             ];
 
             const currentWord = vocabularyList[currentIndex];
 
             // ---------------------------------------------------------
-            // 3. 全圖片預載 (Global Preloader)
+            // 圖片直接使用本地路徑
             // ---------------------------------------------------------
-            const getImageUrl = (prompt, id) => {
-                const encodedPrompt = encodeURIComponent(prompt);
-                return `https://image.pollinations.ai/prompt/${encodedPrompt}?width=600&height=400&nologo=true&seed=${id}&model=flux`;
+            const getImageUrl = (id) => {
+                // 這裡假設圖片已經下載並放在 images 資料夾中，檔名為 vocab_{id}.jpg
+                return `images/vocab_${id}.jpg`;
             };
-
-            // 在背景將所有圖片載入到瀏覽器快取中
-            useEffect(() => {
-                const preloadAllImages = async () => {
-                    console.log("開始背景預載所有圖片...");
-                    for (const item of vocabularyList) {
-                        const img = new Image();
-                        img.src = getImageUrl(item.imagePrompt, item.id);
-                        // 我們不等待它載完，直接發出請求，瀏覽器會處理快取
-                    }
-                };
-                // 延遲一點執行，讓首屏優先渲染
-                const timer = setTimeout(preloadAllImages, 1000);
-                return () => clearTimeout(timer);
-            }, []);
 
             const handleNext = useCallback(() => {
                 setIsFlipped(false);
@@ -732,7 +189,7 @@
                     
                     <div className="mb-6 text-center">
                         <h1 className="text-3xl font-bold text-gray-800 mb-1">大家的日本語 第27課</h1>
-                        <p className="text-gray-500 text-sm">互動式單字記憶卡</p>
+                        <p className="text-gray-500 text-sm">互動式單字記憶卡 (靜態資源版)</p>
                     </div>
 
                     <div className="relative w-full max-w-md h-[640px] perspective-1000">
@@ -757,12 +214,17 @@
                             {/* Front Side */}
                             <div className={`absolute w-full h-full backface-hidden rounded-2xl shadow-xl overflow-hidden border ${currentWord.borderColor} flex flex-col ${currentWord.color} bg-white`}>
                                 
-                                {/* Image Area with Smart Loading */}
+                                {/* Image Area with Local Image */}
                                 <div className="h-[40%] w-full bg-gray-200 relative overflow-hidden group">
-                                    <SmartImage 
-                                        src={getImageUrl(currentWord.imagePrompt, currentWord.id)}
+                                    <img 
+                                        src={getImageUrl(currentWord.id)} 
                                         alt={currentWord.kanji}
-                                        className="w-full h-full"
+                                        className="w-full h-full object-cover"
+                                        // 錯誤處理：如果圖片還沒下載，顯示提示圖片
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src = "https://placehold.co/600x400/e2e8f0/94a3b8?text=Image+Not+Found"; 
+                                        }}
                                     />
                                     
                                     <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity z-20">
@@ -777,7 +239,6 @@
                                     <p className="text-xl text-gray-400 mb-3 font-medium tracking-wide">{currentWord.reading}</p>
                                     
                                     <div className={`text-5xl font-black mb-8 text-center ${currentWord.accentColor}`}>
-                                        {/* 單字正面，不顯示發音按鈕，點擊大喇叭發音 */}
                                         <FuriganaText text={currentWord.kanji} />
                                     </div>
                                     
