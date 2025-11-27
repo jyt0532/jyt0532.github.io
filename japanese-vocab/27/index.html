@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大家的日本語 第27課 - 互動單字卡 (完整版)</title>
+    <title>大家的日本語 第27課 - 互動單字卡 (動漫增強穩定版)</title>
     
-    <!-- 1. 載入 Tailwind CSS (樣式) -->
+    <!-- 1. 載入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. 載入 Babel (讓瀏覽器看得懂 JSX) -->
+    <!-- 2. 載入 Babel -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <!-- 3. 設定 Import Map -->
@@ -29,25 +29,111 @@
         .rotate-y-180 { transform: rotateY(180deg); }
         ruby { ruby-align: center; }
         rt { line-height: 1; user-select: none; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* 圖片載入動畫 */
+        @keyframes pulse-gray {
+            0%, 100% { background-color: #e2e8f0; }
+            50% { background-color: #cbd5e1; }
+        }
+        .animate-pulse-gray {
+            animation: pulse-gray 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-slate-100">
     <div id="root"></div>
 
     <script type="text/babel" data-type="module">
-        import React, { useState, useEffect } from 'react';
+        import React, { useState, useEffect, useRef, useCallback } from 'react';
         import { createRoot } from 'react-dom/client';
-        import { ChevronLeft, ChevronRight, RotateCcw, Volume2, BookOpen, Lightbulb } from 'lucide-react';
+        import { ChevronLeft, ChevronRight, RotateCcw, Volume2, BookOpen, Lightbulb, Image as ImageIcon, RefreshCw } from 'lucide-react';
+
+        // ---------------------------------------------------------
+        // 1. 智慧圖片元件
+        // ---------------------------------------------------------
+        const SmartImage = ({ src, alt, className }) => {
+            const [status, setStatus] = useState('loading'); // loading, loaded, error
+            const [retryCount, setRetryCount] = useState(0);
+            const maxRetries = 3;
+
+            useEffect(() => {
+                setStatus('loading');
+                setRetryCount(0);
+                
+                // 嘗試預載圖片以確認其可用性
+                const img = new Image();
+                img.src = src;
+                img.onload = () => setStatus('loaded');
+                img.onerror = () => {
+                    // 第一次失敗不立即報錯，等待重試機制
+                    if (retryCount === 0) handleError();
+                };
+            }, [src]);
+
+            const handleError = () => {
+                if (retryCount < maxRetries) {
+                    setTimeout(() => {
+                        setRetryCount(prev => prev + 1);
+                    }, 2000); // 延長重試間隔至 2 秒
+                } else {
+                    setStatus('error');
+                }
+            };
+
+            // 加入時間戳以繞過可能的緩存問題（僅在重試時）
+            const currentSrc = retryCount > 0 ? `${src}&t=${Date.now()}` : src;
+
+            return (
+                <div className={`relative w-full h-full overflow-hidden ${className}`}>
+                    {/* 載入中 */}
+                    {status !== 'loaded' && status !== 'error' && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 animate-pulse-gray z-10">
+                            <ImageIcon className="text-gray-400 w-10 h-10 mb-2 opacity-50" />
+                            <span className="text-gray-400 text-xs">
+                                {retryCount > 0 ? `重試中 (${retryCount}/${maxRetries})...` : '繪製中...'}
+                            </span>
+                        </div>
+                    )}
+
+                    {/* 錯誤 */}
+                    {status === 'error' && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 z-10">
+                            <p className="text-gray-400 text-xs mb-2">圖片載入失敗</p>
+                            <button 
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setRetryCount(0);
+                                    setStatus('loading');
+                                }}
+                                className="flex items-center gap-1 px-3 py-1 bg-white border border-gray-300 rounded-full text-xs text-gray-600 hover:bg-gray-50 shadow-sm"
+                            >
+                                <RefreshCw size={12} /> 重試
+                            </button>
+                        </div>
+                    )}
+
+                    {/* 圖片 */}
+                    <img 
+                        src={currentSrc} 
+                        alt={alt}
+                        className={`w-full h-full object-cover transition-opacity duration-500 ${status === 'loaded' ? 'opacity-100' : 'opacity-0'}`}
+                        onLoad={() => setStatus('loaded')}
+                        onError={handleError}
+                    />
+                </div>
+            );
+        };
 
         const VocabularySlides = () => {
             const [currentIndex, setCurrentIndex] = useState(0);
             const [isFlipped, setIsFlipped] = useState(false);
-            const [loading, setLoading] = useState(true);
 
             // Furigana Component
             const FuriganaText = ({ text, className = "" }) => {
                 if (!text) return null;
-                // Split by newline to handle multiple examples
                 const lines = text.split('\n');
                 
                 return (
@@ -65,7 +151,7 @@
                                 parts.push(
                                     <ruby key={`${lineIndex}-${match.index}`} className="mx-0.5">
                                         {match[1]}
-                                        <rt className="text-[0.5em] text-gray-500 font-normal select-none">{match[2]}</rt>
+                                        <rt className="text-[0.55em] text-gray-600 font-normal select-none">{match[2]}</rt>
                                     </ruby>
                                 );
                                 lastIndex = regex.lastIndex;
@@ -75,7 +161,7 @@
                             }
 
                             return (
-                                <span key={lineIndex} className={`block ${lineIndex > 0 ? 'mt-3 border-t border-gray-100 pt-2' : ''} ${className}`}>
+                                <span key={lineIndex} className={`block ${lineIndex > 0 ? 'mt-2 pt-2 border-t border-dashed border-gray-200' : ''} ${className}`}>
                                     {parts}
                                 </span>
                             );
@@ -84,7 +170,7 @@
                 );
             };
 
-            // Data - Added Traditional Chinese translations to ALL examples
+            // Data
             const vocabularyList = [
                 { 
                     id: 1, 
@@ -92,9 +178,10 @@
                     reading: "かいます", 
                     meaning: "養 (寵物)", 
                     example: "ペットを飼[か]っている (正在養寵物)\n放[はな]し飼[が]い (放養)\n飼育[しいく] (飼養)\n飼料[しりょう] (飼料)", 
-                    note: "", 
-                    imagePrompt: "cute person feeding a pet dog warm colors anime style", 
-                    color: "bg-orange-100" 
+                    imagePrompt: "anime style, cute girl feeding a small puppy in a warm sunny garden, studio ghibli art style, detailed, soft lighting", 
+                    color: "bg-orange-50",
+                    accentColor: "text-orange-600",
+                    borderColor: "border-orange-200"
                 },
                 { 
                     id: 2, 
@@ -102,9 +189,10 @@
                     reading: "はしります", 
                     meaning: "跑 / 行駛", 
                     example: "道[みち]を走[はし]る (在路上跑)\nトップを走[はし]る (跑第一)\n敵陣[てきじん]に走[はし]る (投奔敵營)\n背中[せなか]に痛[いた]みが走[はし]る (背部一陣劇痛竄過)\n極端[きょくたん]に走[はし]る (走極端)\n奔走[ほんそう] (奔走/四處忙碌)\n走塁[そうるい] (跑壘)\n走者一掃[そうしゃいっそう] (清壘)", 
-                    note: "", 
-                    imagePrompt: "runner running fast on a track dynamic pose anime style", 
-                    color: "bg-blue-100" 
+                    imagePrompt: "anime style, energetic boy running fast on a track, dynamic action pose, speed lines, sports anime aesthetic, determination", 
+                    color: "bg-blue-50",
+                    accentColor: "text-blue-600",
+                    borderColor: "border-blue-200"
                 },
                 { 
                     id: 3, 
@@ -112,9 +200,10 @@
                     reading: "みえます", 
                     meaning: "看得見 (自然進入眼簾)", 
                     example: "富士山[ふじさん]が見[み]える (看得見富士山)\n目[め]に見[み]えて良[よ]くなった (肉眼可見地變好)\n解決[かいけつ]したかに見[み]える (看起來似乎解決了)\n先生[せんせい]が見[み]えたよ (老師來了-敬語)", 
-                    note: "", 
-                    imagePrompt: "view of mount fuji from a distance clear sky anime style", 
-                    color: "bg-sky-100" 
+                    imagePrompt: "anime style, beautiful view of Mount Fuji from a distance, blue sky, cherry blossoms, makoto shinkai art style, scenic", 
+                    color: "bg-sky-50",
+                    accentColor: "text-sky-600",
+                    borderColor: "border-sky-200"
                 },
                 { 
                     id: 4, 
@@ -122,9 +211,10 @@
                     reading: "きこえます", 
                     meaning: "聽得見 (聲音自然傳入)", 
                     example: "微[かす]かに聞[き]こえる (隱約聽見)\n人[ひと]の声[こえ]が聞[き]こえる (聽見人的聲音)\n彼[かれ]の発言[はつげん]は皮肉[ひにく]に聞[き]こえる (聽起來很諷刺)", 
-                    note: "", 
-                    imagePrompt: "person listening to birds singing in nature anime style", 
-                    color: "bg-green-100" 
+                    imagePrompt: "anime style, girl listening to birds singing in a forest, hand cupping ear, peaceful nature, kyoto animation style, soft green", 
+                    color: "bg-green-50",
+                    accentColor: "text-green-600",
+                    borderColor: "border-green-200"
                 },
                 { 
                     id: 5, 
@@ -132,9 +222,10 @@
                     reading: "できます", 
                     meaning: "完工 / 建成 / 產生", 
                     example: "駅前[えきまえ]に新[あたら]しい店[みせ]ができた (車站前開了新店)\n免疫[めんえき]ができる (產生免疫力)\n耳[みみ]にたこができる (耳朵長繭了/聽膩了)\n木[き]でできている (用木頭做成的)\n出来物[できもの] (腫包)", 
-                    note: "", 
-                    imagePrompt: "new shop opening with flowers and decorations anime style", 
-                    color: "bg-yellow-100" 
+                    imagePrompt: "anime style, grand opening of a cute bakery shop, flowers, balloons, happy atmosphere, slice of life anime", 
+                    color: "bg-yellow-50",
+                    accentColor: "text-yellow-600",
+                    borderColor: "border-yellow-200"
                 },
                 { 
                     id: 6, 
@@ -142,9 +233,10 @@
                     reading: "ひらきます", 
                     meaning: "舉辦 / 開(班) / 張開", 
                     example: "料理教室[りょうりきょうしつ]を開[ひら]く (開料理教室)\n花[はな]が開[ひら]く (花開了)\n銀行[ぎんこう]が開[ひら]く (銀行開門營業)\n本[ほん]を開[ひら]く (打開書)\n心[こころ]を開[ひら]く (敞開心房)\n店[みせ]を開[ひら]く (開店)\n両開[りょうびら]き (雙開)\n店開[みせびら]き (開店/開張)\n海開[うみびら]き (海水浴場開放)", 
-                    note: "", 
-                    imagePrompt: "cooking class with teacher and students anime style", 
-                    color: "bg-rose-100" 
+                    imagePrompt: "anime style, flowers blooming magically, sparkles, open book, warm light, shoujo anime art style", 
+                    color: "bg-rose-50",
+                    accentColor: "text-rose-600",
+                    borderColor: "border-rose-200"
                 },
                 { 
                     id: 7, 
@@ -152,9 +244,10 @@
                     reading: "とり", 
                     meaning: "鳥", 
                     example: "空[そら]を飛[と]んでいる鳥[とり] (在空中飛的鳥)\n焼[や]き鳥[とり] (烤雞串)\n鶏[にわとり]＝庭鳥[にわとり] (雞)\n養鶏場[ようけいじょう] (養雞場)\n鳥[とり]インフルエンザ (禽流感)", 
-                    note: "", 
-                    imagePrompt: "flock of birds flying in the blue sky anime style", 
-                    color: "bg-cyan-100" 
+                    imagePrompt: "anime style, white birds flying in a vast blue sky, freedom, studio ghibli clouds, high detail", 
+                    color: "bg-cyan-50",
+                    accentColor: "text-cyan-600",
+                    borderColor: "border-cyan-200"
                 },
                 { 
                     id: 8, 
@@ -162,9 +255,10 @@
                     reading: "こえ", 
                     meaning: "聲音 (人或動物)", 
                     example: "大[おお]きな声[こえ] (大聲)\n声[こえ]を掛[か]ける (打招呼)\n声[こえ]が掠[かす]れる (沙啞)\n不満[ふまん]の声[こえ]が上[あ]がる (不滿聲四起)\n裏声[うらごえ] (假音)\n地声[じごえ] (真音)", 
-                    note: "", 
-                    imagePrompt: "person shouting or singing with sound waves visual anime style", 
-                    color: "bg-purple-100" 
+                    imagePrompt: "anime style, girl singing loudly on stage, musical notes floating, shiny microphone, idol anime style, vibrant", 
+                    color: "bg-purple-50",
+                    accentColor: "text-purple-600",
+                    borderColor: "border-purple-200"
                 },
                 { 
                     id: 9, 
@@ -172,9 +266,10 @@
                     reading: "なみ", 
                     meaning: "波浪", 
                     example: "波[なみ]の音[おと] (海浪聲)\n人[ひと]の波[なみ] (人海)\n景気回復[けいきかいふく]の波[なみ]に乗[の]る (順應景氣復甦)\n甍[いらか]の波[なみ] (屋瓦波浪)\n波浪注意報[はろうちゅういほう] (波浪警報)\n波紋[はもん]が生[しょう]じ (產生波紋/風波)", 
-                    note: "", 
-                    imagePrompt: "ocean waves crashing on the beach anime style", 
-                    color: "bg-blue-200" 
+                    imagePrompt: "anime style, ocean waves crashing on a beach at sunset, sparkling water, emotional scenery, detailed water", 
+                    color: "bg-indigo-50",
+                    accentColor: "text-indigo-600",
+                    borderColor: "border-indigo-200"
                 },
                 { 
                     id: 10, 
@@ -182,9 +277,10 @@
                     reading: "はなび", 
                     meaning: "煙火", 
                     example: "夏[なつ]の花火大会[はなびたいかい] (夏季煙火大會)\n線香花火[せんこうはなび] (仙女棒)\n打[う]ち上[あ]げ花火[はなび] (高空煙火)", 
-                    note: "", 
-                    imagePrompt: "colorful fireworks in the night sky anime style", 
-                    color: "bg-indigo-100" 
+                    imagePrompt: "anime style, beautiful fireworks in night sky, characters in yukata watching, summer festival, colorful illumination", 
+                    color: "bg-red-50",
+                    accentColor: "text-red-600",
+                    borderColor: "border-red-200"
                 },
                 { 
                     id: 11, 
@@ -192,9 +288,10 @@
                     reading: "どうぐ", 
                     meaning: "工具 / 道具", 
                     example: "大工[だいく]の道具[どうぐ] (木匠的工具)\n釣[つ]りの道具[どうぐ] (釣具)\n知識[ちしき]を出世[しゅっせ]の道具[どうぐ]にする (把知識當作升遷工具)", 
-                    note: "", 
-                    imagePrompt: "various carpentry tools hammer saw anime style", 
-                    color: "bg-stone-200" 
+                    imagePrompt: "anime style, various tools on a wooden workbench, hammer, wrench, detailed objects, warm workshop lighting", 
+                    color: "bg-stone-50",
+                    accentColor: "text-stone-600",
+                    borderColor: "border-stone-200"
                 },
                 { 
                     id: 12, 
@@ -202,9 +299,10 @@
                     reading: "きょうしつ", 
                     meaning: "～教室 (才藝班)", 
                     example: "ピアノ教室[きょうしつ] (鋼琴教室)\n体操教室[たいそうきょうしつ] (體操教室)\n学習塾[がくしゅうじゅく] (補習班)\n英会話[えいかいわ]スクール (英語補習班)", 
-                    note: "", 
-                    imagePrompt: "piano classroom with grand piano anime style", 
-                    color: "bg-pink-100" 
+                    imagePrompt: "anime style, japanese classroom with desks and chalkboard, sunlight coming through window, nostalgic school life", 
+                    color: "bg-pink-50",
+                    accentColor: "text-pink-600",
+                    borderColor: "border-pink-200"
                 },
                 { 
                     id: 13, 
@@ -212,9 +310,10 @@
                     reading: "～しか", 
                     meaning: "只～ (後接否定)", 
                     example: "50円[えん]しか持[も]っていない (只有50元-太少了)\nやるなら今[いま]しかない (要使用的話現在是唯一機會)\nあなたにしか教[おし]えない (只告訴你)", 
-                    note: "", 
-                    imagePrompt: "hand holding a single small coin looking sad anime style", 
-                    color: "bg-gray-200" 
+                    imagePrompt: "anime style, character looking at a single coin in hand, sad expression, empty wallet, dramatic lighting", 
+                    color: "bg-gray-50",
+                    accentColor: "text-gray-600",
+                    borderColor: "border-gray-200"
                 },
                 { 
                     id: 14, 
@@ -222,9 +321,10 @@
                     reading: "ほかの", 
                     meaning: "其他的", 
                     example: "他[ほか]の店[みせ]に行[い]こう (去別家店吧)\n他[ほか]にはない品揃[しなぞろ]え (別處沒有的商品陣容)\n他[ほか]に漏[も]らすな (別洩漏給別人)\n思[おも]いの外[ほか]の重傷[じゅうしょう]だ (出乎意料的重傷)", 
-                    note: "", 
-                    imagePrompt: "person choosing between different shops anime style", 
-                    color: "bg-teal-100" 
+                    imagePrompt: "anime style, character standing at crossroads looking at different paths, adventure, decision making, fantasy landscape", 
+                    color: "bg-teal-50",
+                    accentColor: "text-teal-600",
+                    borderColor: "border-teal-200"
                 },
                 { 
                     id: 15, 
@@ -232,9 +332,10 @@
                     reading: "はっきり", 
                     meaning: "清楚地 / 明確地", 
                     example: "はっきり見[み]える (看得一清二楚)\n好[す]き嫌[きら]いがはっきりした人[ひと] (愛恨分明的人)\n二日酔[ふつかよ]いで頭[あたま]がはっきりしない (因為宿醉頭腦不清)", 
-                    note: "", 
-                    imagePrompt: "looking through glasses with clear vision anime style", 
-                    color: "bg-emerald-100" 
+                    imagePrompt: "anime style, putting on glasses, world becoming clear and sharp, focus effect, bright eyes", 
+                    color: "bg-emerald-50",
+                    accentColor: "text-emerald-600",
+                    borderColor: "border-emerald-200"
                 },
                 { 
                     id: 16, 
@@ -242,9 +343,10 @@
                     reading: "ふしぎ", 
                     meaning: "不可思議 / 奇怪", 
                     example: "不思議[ふしぎ]な話[はなし] (不可思議的故事)\n世界[せかい]の七不思議[ななふしぎ] (世界七大奇蹟)\n事故[じこ]が起[お]こっても不思議[ふしぎ]ではない (發生事故也不奇怪)\n摩訶不思議[まかふしぎ] (非常不可思議)", 
-                    note: "", 
-                    imagePrompt: "magical glowing book floating mysterious anime style", 
-                    color: "bg-violet-100" 
+                    imagePrompt: "anime style, magical floating book, glowing mysterious runes, fantasy library, purple magic aura", 
+                    color: "bg-violet-50",
+                    accentColor: "text-violet-600",
+                    borderColor: "border-violet-200"
                 },
                 { 
                     id: 17, 
@@ -252,9 +354,10 @@
                     reading: "つけます", 
                     meaning: "戴上 / 縫上 / 塗抹", 
                     example: "ボタンを付[つ]ける (縫鈕扣)\n服[ふく]にボタンをつける (把鈕扣縫在衣服上)\n仮面[かめん]をつけて演[えん]じる (戴著面具演戲)\n改革[かいかく]に手[て]をつける (著手進行改革)\n名前[なまえ]をつける (取名字)", 
-                    note: "", 
-                    imagePrompt: "person sewing a button on a shirt closeup anime style", 
-                    color: "bg-red-100" 
+                    imagePrompt: "anime style, close up of hands sewing a button, needle and thread, cozy detailed art, slice of life", 
+                    color: "bg-red-50",
+                    accentColor: "text-red-600",
+                    borderColor: "border-red-200"
                 },
                 { 
                     id: 18, 
@@ -262,9 +365,10 @@
                     reading: "そら", 
                     meaning: "天空", 
                     example: "青[あお]い空[そら] (藍天)\n青空[あおぞら] (藍天)\n青空駐車[あおぞらちゅうしゃ] (露天停車)", 
-                    note: "", 
-                    imagePrompt: "beautiful blue sky with fluffy white clouds anime style", 
-                    color: "bg-sky-200" 
+                    imagePrompt: "anime style, vast blue sky with huge white clouds, summer vibe, makoto shinkai style clouds, bright", 
+                    color: "bg-sky-100",
+                    accentColor: "text-sky-700",
+                    borderColor: "border-sky-300"
                 },
                 { 
                     id: 19, 
@@ -272,9 +376,10 @@
                     reading: "とびます", 
                     meaning: "飛", 
                     example: "飛行機[ひこうき]が飛[と]ぶ (飛機飛行)\n午後[ごご]の便[びん]で日本[にほん]に飛[と]ぶ (搭下午的班機飛往日本)\n台風[たいふう]で瓦[かわら]が飛[と]んだ (因為颱風，瓦片飛走了)\n川[かわ]を飛[と]んで渡[わた]る (飛躍渡河)\n話[はなし]が飛[と]ぶ (離題)", 
-                    note: "", 
-                    imagePrompt: "airplane flying high in the clouds anime style", 
-                    color: "bg-blue-300" 
+                    imagePrompt: "anime style, airplane flying high above clouds, sunlight, travel, sense of freedom, blue sky", 
+                    color: "bg-blue-100",
+                    accentColor: "text-blue-700",
+                    borderColor: "border-blue-300"
                 },
                 { 
                     id: 20, 
@@ -282,25 +387,47 @@
                     reading: "むかし", 
                     meaning: "從前 / 古時候", 
                     example: "昔[むかし]の遊[あそ]び (以前的遊戲)\n昔話[むかしばなし] (民間故事)\n城下町[じょうかまち]と言[い]っても、昔[むかし]の面影[おもかげ]はない (雖說是城下町，但已無往日風貌)", 
-                    note: "", 
-                    imagePrompt: "historical japanese village sepia tone anime style", 
-                    color: "bg-amber-100" 
+                    imagePrompt: "anime style, old japanese village, sepia tone, nostalgia, traditional houses, sunset, historical atmosphere", 
+                    color: "bg-amber-50",
+                    accentColor: "text-amber-600",
+                    borderColor: "border-amber-200"
                 }
             ];
 
             const currentWord = vocabularyList[currentIndex];
 
-            const handleNext = () => {
-                setIsFlipped(false);
-                setLoading(true);
-                setCurrentIndex((prev) => (prev + 1) % vocabularyList.length);
+            // ---------------------------------------------------------
+            // 3. 全圖片預載 (Global Preloader)
+            // ---------------------------------------------------------
+            const getImageUrl = (prompt, id) => {
+                const encodedPrompt = encodeURIComponent(prompt);
+                return `https://image.pollinations.ai/prompt/${encodedPrompt}?width=600&height=400&nologo=true&seed=${id}&model=flux`;
             };
 
-            const handlePrev = () => {
+            // 在背景將所有圖片載入到瀏覽器快取中
+            useEffect(() => {
+                const preloadAllImages = async () => {
+                    console.log("開始背景預載所有圖片...");
+                    for (const item of vocabularyList) {
+                        const img = new Image();
+                        img.src = getImageUrl(item.imagePrompt, item.id);
+                        // 我們不等待它載完，直接發出請求，瀏覽器會處理快取
+                    }
+                };
+                // 延遲一點執行，讓首屏優先渲染
+                const timer = setTimeout(preloadAllImages, 1000);
+                return () => clearTimeout(timer);
+            }, []);
+
+            const handleNext = useCallback(() => {
                 setIsFlipped(false);
-                setLoading(true);
+                setCurrentIndex((prev) => (prev + 1) % vocabularyList.length);
+            }, [vocabularyList.length]);
+
+            const handlePrev = useCallback(() => {
+                setIsFlipped(false);
                 setCurrentIndex((prev) => (prev - 1 + vocabularyList.length) % vocabularyList.length);
-            };
+            }, [vocabularyList.length]);
 
             const handleFlip = () => {
                 setIsFlipped(!isFlipped);
@@ -313,65 +440,133 @@
                 window.speechSynthesis.speak(utterance);
             };
 
-            const getImageUrl = (prompt) => {
-                return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=600&height=400&nologo=true`;
-            };
-
             return (
-                <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4 font-sans text-gray-800">
-                    <div className="mb-8 text-center">
-                        <h1 className="text-3xl font-bold text-gray-800 mb-2">大家的日本語 第27課</h1>
-                        <p className="text-gray-500">互動式單字記憶卡</p>
+                <div className="flex flex-col items-center justify-center min-h-screen bg-slate-100 p-4 font-sans text-gray-800">
+                    
+                    <div className="mb-6 text-center">
+                        <h1 className="text-3xl font-bold text-gray-800 mb-1">大家的日本語 第27課</h1>
+                        <p className="text-gray-500 text-sm">互動式單字記憶卡</p>
                     </div>
 
-                    <div className="relative w-full max-w-md h-[600px] perspective-1000">
+                    <div className="relative w-full max-w-md h-[640px] perspective-1000">
+                        
+                        {/* Progress Bar */}
                         <div className="absolute -top-6 left-0 w-full h-1 bg-gray-200 rounded-full overflow-hidden">
-                            <div className="h-full bg-blue-500 transition-all duration-300" style={{ width: `${((currentIndex + 1) / vocabularyList.length) * 100}%` }}></div>
+                            <div 
+                                className="h-full bg-blue-500 transition-all duration-300"
+                                style={{ width: `${((currentIndex + 1) / vocabularyList.length) * 100}%` }}
+                            />
                         </div>
-                        <div className="absolute -top-10 right-0 text-sm font-bold text-gray-400">
+                        <div className="absolute -top-8 right-0 text-xs font-bold text-gray-400">
                             {currentIndex + 1} / {vocabularyList.length}
                         </div>
 
-                        <div className={`relative w-full h-full transition-transform duration-500 transform-style-3d cursor-pointer ${isFlipped ? 'rotate-y-180' : ''}`} onClick={handleFlip}>
-                            {/* Front */}
-                            <div className={`absolute w-full h-full backface-hidden rounded-2xl shadow-xl overflow-hidden border border-gray-100 flex flex-col ${currentWord.color} bg-opacity-30 bg-white`}>
-                                <div className="h-[45%] w-full bg-gray-200 relative overflow-hidden">
-                                    <img src={getImageUrl(currentWord.imagePrompt)} alt={currentWord.kanji} className="w-full h-full object-cover" onLoad={() => setLoading(false)} />
-                                    <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1">
-                                        <Lightbulb size={12} /> 點擊翻轉查看意思
+                        {/* The Flip Card */}
+                        <div 
+                            className={`relative w-full h-full transition-transform duration-500 transform-style-3d cursor-pointer ${isFlipped ? 'rotate-y-180' : ''}`}
+                            onClick={handleFlip}
+                        >
+                            
+                            {/* Front Side */}
+                            <div className={`absolute w-full h-full backface-hidden rounded-2xl shadow-xl overflow-hidden border ${currentWord.borderColor} flex flex-col ${currentWord.color} bg-white`}>
+                                
+                                {/* Image Area with Smart Loading */}
+                                <div className="h-[40%] w-full bg-gray-200 relative overflow-hidden group">
+                                    <SmartImage 
+                                        src={getImageUrl(currentWord.imagePrompt, currentWord.id)}
+                                        alt={currentWord.kanji}
+                                        className="w-full h-full"
+                                    />
+                                    
+                                    <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity z-20">
+                                        <Lightbulb size={12} /> 點擊翻轉
                                     </div>
                                 </div>
-                                <div className="flex-1 flex flex-col items-center justify-center p-6 bg-white">
-                                    <p className="text-2xl text-gray-500 mb-2 font-medium">{currentWord.reading}</p>
-                                    <div className="text-6xl text-gray-800 mb-6 font-black">
+
+                                {/* Content Area */}
+                                <div className="flex-1 flex flex-col items-center justify-center p-6 bg-white relative">
+                                    <div className={`absolute top-0 left-0 w-full h-1 ${currentWord.color.replace('bg-', 'bg-opacity-50 bg-')}`}></div>
+                                    
+                                    <p className="text-xl text-gray-400 mb-3 font-medium tracking-wide">{currentWord.reading}</p>
+                                    
+                                    <div className={`text-5xl font-black mb-8 text-center ${currentWord.accentColor}`}>
                                         <FuriganaText text={currentWord.kanji} />
                                     </div>
-                                    <button onClick={(e) => { e.stopPropagation(); speak(currentWord.kanji); }} className="p-3 rounded-full bg-blue-50 text-blue-500 hover:bg-blue-100 transition-colors" title="播放發音">
-                                        <Volume2 size={24} />
+                                    
+                                    <button 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            speak(currentWord.kanji);
+                                        }}
+                                        className={`p-4 rounded-full ${currentWord.color} ${currentWord.accentColor} hover:brightness-95 transition-all active:scale-95 shadow-sm`}
+                                        title="播放發音"
+                                    >
+                                        <Volume2 size={28} />
                                     </button>
                                 </div>
-                                <div className="p-4 bg-gray-50 text-center text-gray-400 text-sm"><p>點擊卡片查看中文翻譯與筆記</p></div>
+                                
+                                <div className="p-3 bg-gray-50 text-center text-gray-400 text-xs border-t border-gray-100">
+                                    點擊卡片查看意思與例句
+                                </div>
                             </div>
 
-                            {/* Back */}
-                            <div className={`absolute w-full h-full backface-hidden rotate-y-180 rounded-2xl shadow-xl overflow-hidden border border-gray-100 flex flex-col bg-white`}>
-                                <div className={`h-2 w-full ${currentWord.color.replace('bg-', 'bg-')}`}></div>
-                                <div className="flex-1 p-8 flex flex-col items-center justify-center text-center">
-                                    <h3 className="text-2xl text-gray-400 font-bold mb-4"><FuriganaText text={currentWord.kanji} /></h3>
-                                    <div className="mb-8"><h2 className="text-4xl font-bold text-gray-800 mb-2">{currentWord.meaning}</h2></div>
-                                    <div className="w-full bg-blue-50 p-4 rounded-xl mb-4 text-left overflow-y-auto max-h-[300px]">
-                                        <div className="flex items-center gap-2 mb-2 text-blue-600 font-bold text-sm uppercase tracking-wide sticky top-0 bg-blue-50 py-1"><BookOpen size={16} /><span>例句</span></div>
-                                        <p className="text-gray-700 font-medium text-lg leading-relaxed"><FuriganaText text={currentWord.example} /></p>
+                            {/* Back Side */}
+                            <div className="absolute w-full h-full backface-hidden rotate-y-180 rounded-2xl shadow-xl overflow-hidden border border-gray-200 flex flex-col bg-white">
+                                <div className={`h-2 w-full ${currentWord.color.replace('bg-', 'bg-')}`}></div> 
+                                
+                                <div className="flex-1 flex flex-col p-6 h-full">
+                                    <div className="text-center mb-4 pb-4 border-b border-gray-100">
+                                        <h3 className={`text-2xl font-bold mb-1 ${currentWord.accentColor}`}>
+                                            <FuriganaText text={currentWord.kanji} />
+                                        </h3>
+                                        <p className="text-lg text-gray-800 font-bold mt-2">{currentWord.meaning}</p>
+                                    </div>
+
+                                    <div className="flex-1 overflow-y-auto no-scrollbar pr-1">
+                                        <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                            <div className="flex items-center gap-2 mb-3 text-gray-500 font-bold text-xs uppercase tracking-wider sticky top-0 bg-gray-50 py-1">
+                                                <BookOpen size={14} />
+                                                <span>例句與補充</span>
+                                            </div>
+                                            <div className="text-gray-700 text-base leading-relaxed space-y-3">
+                                                <FuriganaText text={currentWord.example} />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-8 mt-8">
-                        <button onClick={handlePrev} className="p-4 rounded-full bg-white shadow-lg text-gray-600 hover:text-blue-500 hover:shadow-xl transition-all transform hover:-translate-y-1"><ChevronLeft size={28} /></button>
-                        <button onClick={() => { setIsFlipped(false); setCurrentIndex(0); }} className="flex items-center gap-2 px-6 py-3 rounded-full bg-white shadow-md text-gray-600 font-medium hover:bg-gray-50 transition-colors"><RotateCcw size={18} /><span>重新開始</span></button>
-                        <button onClick={handleNext} className="p-4 rounded-full bg-white shadow-lg text-gray-600 hover:text-blue-500 hover:shadow-xl transition-all transform hover:-translate-y-1"><ChevronRight size={28} /></button>
+                    {/* Controls */}
+                    <div className="flex items-center gap-6 mt-8">
+                        <button 
+                            onClick={handlePrev}
+                            className="p-4 rounded-full bg-white shadow-md text-gray-600 hover:text-blue-600 hover:shadow-lg transition-all active:scale-95 border border-gray-100"
+                            aria-label="上一個"
+                        >
+                            <ChevronLeft size={24} />
+                        </button>
+
+                        <button 
+                            onClick={() => {
+                                setIsFlipped(false);
+                                setCurrentIndex(0);
+                            }}
+                            className="flex items-center gap-2 px-6 py-3 rounded-full bg-white shadow-md text-gray-600 font-medium hover:text-blue-600 hover:shadow-lg transition-all active:scale-95 border border-gray-100"
+                        >
+                            <RotateCcw size={18} />
+                            <span className="text-sm">重新開始</span>
+                        </button>
+
+                        <button 
+                            onClick={handleNext}
+                            className="p-4 rounded-full bg-white shadow-md text-gray-600 hover:text-blue-600 hover:shadow-lg transition-all active:scale-95 border border-gray-100"
+                            aria-label="下一個"
+                        >
+                            <ChevronRight size={24} />
+                        </button>
                     </div>
                 </div>
             );
