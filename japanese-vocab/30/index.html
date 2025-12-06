@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大家的日本語 第30課 - 完整加強版單字卡</title>
+    
+    <!-- 1. 載入 Tailwind CSS (樣式) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 2. 載入 Babel (讓瀏覽器看得懂 JSX) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- 3. 設定 Import Map -->
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.2.0",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+            "lucide-react": "https://esm.sh/lucide-react@0.294.0"
+        }
+    }
+    </script>
+
+    <style>
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        ruby { ruby-align: center; }
+        rt { line-height: 1; user-select: none; font-size: 0.6em; color: #818cf8; font-weight: normal; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* 卡片翻轉動畫優化 */
+        .card-inner { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="bg-indigo-50 font-sans text-gray-800">
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect, useCallback } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { ChevronLeft, ChevronRight, RotateCcw, Volume2, BookOpen, Star, Sparkles, Image as ImageIcon, Info } from 'lucide-react';
+
+        // 完整 48 個單字資料庫
+        const vocabularyData = [
+            // --- 動詞 ---
+            { id: 1, kanji: "貼ります", reading: "はります", meaning: "貼 / 張貼", example: "壁[かべ]にポスターが貼[は]ってあります。", image: "vocab_1.jpg" },
+            { id: 2, kanji: "掛けます", reading: "かけます", meaning: "掛 / 懸掛 / 花費", example: "カレンダーが掛[か]けてあります。\n(補充) 教養[きょうよう]を鼻[はな]に掛[か]ける (炫耀教養)。", image: "vocab_2.jpg" },
+            { id: 3, kanji: "飾ります", reading: "かざります", meaning: "裝飾 / 陳列", example: "部屋[へや]に花[はな]が飾[かざ]ってあります。\n(補充) 上辺[うわべ]を飾[かざ]る (粉飾表面)。", image: "vocab_3.jpg" },
+            { id: 4, kanji: "並べます", reading: "ならべます", meaning: "排列", example: "机[つくえ]を二列[にれつ]に並[なら]べます。", image: "vocab_4.jpg" },
+            { id: 5, kanji: "植えます", reading: "うえます", meaning: "種植 / 培養", example: "庭[にわ]に木[き]が植[う]えてあります。\n(補充) 道徳観念[どうとくかんねん]を植[う]える (灌輸道德觀念)。", image: "vocab_5.jpg" },
+            { id: 6, kanji: "戻します", reading: "もどします", meaning: "歸還 / 放回 / 嘔吐", example: "本[ほん]を棚[たな]に戻[もど]します。\n(補充) 子供[こども]が食[た]べたものを戻[もど]す (小孩吐了)。", image: "vocab_6.jpg" },
+            { id: 7, kanji: "まとめます", reading: "まとめます", meaning: "總結 / 整理", example: "レポートをまとめます。\n(補充) 荷物[にもつ]をまとめる (打包行李)。", image: "vocab_7.jpg" },
+            { id: 8, kanji: "片づけます", reading: "かたづけます", meaning: "收拾 / 清理", example: "道具[どうぐ]を片[かた]づけます。", image: "vocab_8.jpg" },
+            { id: 9, kanji: "しまいます", reading: "しまいます", meaning: "收拾 / 放入 / 藏起來", example: "はんこは引[ひ]き出[だ]しにしまってあります。\n(補充) 店[みせ]をしまう (打烊)。", image: "vocab_9.jpg" },
+            { id: 10, kanji: "決めます", reading: "きめます", meaning: "決定", example: "旅行[りょこう]の予定[よてい]を決[き]めます。\n(補充) 腹[はら]を決[き]める (下定決心)。", image: "vocab_10.jpg" },
+            { id: 11, kanji: "知らせます", reading: "しらせます", meaning: "通知", example: "みんなに予定[よてい]を知[し]らせます。", image: "vocab_11.jpg" },
+            { id: 12, kanji: "相談します", reading: "そうだんします", meaning: "商量", example: "先生[せんせい]に相談[そうだん]します。", image: "vocab_12.jpg" },
+            { id: 13, kanji: "予習します", reading: "よしゅうします", meaning: "預習", example: "授業[じゅぎょう]の前[まえ]に予習[よしゅう]しておきます。", image: "vocab_13.jpg" },
+            { id: 14, kanji: "復習します", reading: "ふくしゅうします", meaning: "複習", example: "家[いえ]へ帰[かえ]ったら、復習[ふくしゅう]します。", image: "vocab_14.jpg" },
+            { id: 15, kanji: "そのままにします", reading: "そのままにします", meaning: "保持原狀 / 置之不理", example: "道具[どうぐ]はそのままにしておいてください。", image: "vocab_15.jpg" },
+            
+            // --- 圖片補充動詞 ---
+            { id: 16, kanji: "張ります", reading: "はります", meaning: "張開 / 伸展 / 結(冰/網)", example: "池[いけ]に氷[こおり]が張[は]る (池塘結冰)。\n天井[てんじょう]に蜘蛛[くも]の巣[す]が張[は]る (天花板結蜘蛛網)。", image: "vocab_16.jpg" },
+            { id: 17, kanji: "夢を見ます", reading: "ゆめをみます", meaning: "做夢", example: "昨日[きのう]、怖[こわ]い夢[ゆめ]を見[み]ました。\n(補充) 自分[じぶん]の花嫁姿[はなよめすがた]を夢見[ゆめみ]る。", image: "vocab_17.jpg" },
+            { id: 18, kanji: "目が覚めます", reading: "めがさめます", meaning: "醒來 / 覺醒", example: "朝[あさ]６時[じ]に目[め]が覚[さ]めました。\n(補充) 良心[りょうしん]に目覚[めざ]める (良心發現)。", image: "vocab_18.jpg" },
+            { id: 19, kanji: "冷めます", reading: "さめます", meaning: "變冷 / 冷卻 (情感)", example: "スープが冷[さ]める。\n(補充) 冷[さ]めた恋[こい]は戻[もど]らない (逝去的愛回不來)。", image: "vocab_19.jpg" },
+
+            // --- 名詞 ---
+            { id: 20, kanji: "お子さん", reading: "おこさん", meaning: "（別人的）孩子", example: "お子[こ]さんはお元気[げんき]ですか。", image: "vocab_20.jpg" },
+            { id: 21, kanji: "授業", reading: "じゅぎょう", meaning: "上課 / 課程", example: "授業[じゅぎょう]が始[はじ]まります。", image: "vocab_21.jpg" },
+            { id: 22, kanji: "講義", reading: "こうぎ", meaning: "講義 / 講課 (大學)", example: "大学[だいがく]の講義[こうぎ]を聞[き]きます。", image: "vocab_22.jpg" },
+            { id: 23, kanji: "ミーティング", reading: "ミーティング", meaning: "會議 (Meeting)", example: "これからミーティングがあります。", image: "vocab_23.jpg" },
+            { id: 24, kanji: "予定", reading: "よてい", meaning: "預定 / 計畫", example: "今週[こんしゅう]の予定[よてい]を教[おし]えてください。", image: "vocab_24.jpg" },
+            { id: 25, kanji: "お知らせ", reading: "おしらせ", meaning: "通知 / 佈告", example: "掲示板[けいじばん]にお知[し]らせが貼[は]ってあります。", image: "vocab_25.jpg" },
+            { id: 26, kanji: "案内書", reading: "あんないしょ", meaning: "指南書 / 導覽書", example: "旅行[りょこう]の案内書[あんないしょ]を読[よ]みます。", image: "vocab_26.jpg" },
+            { id: 27, kanji: "カレンダー", reading: "カレンダー", meaning: "月曆 / 日曆", example: "カレンダーに予定[よてい]を書[か]いておきます。", image: "vocab_27.jpg" },
+            { id: 28, kanji: "ポスター", reading: "ポスター", meaning: "海報", example: "壁[かべ]にポスターが貼[は]ってあります。", image: "vocab_28.jpg" },
+            { id: 29, kanji: "ごみ箱", reading: "ごみばこ", meaning: "垃圾桶", example: "ごみはごみ箱[ばこ]に捨[す]ててください。", image: "vocab_29.jpg" },
+            { id: 30, kanji: "人形", reading: "にんぎょう", meaning: "人偶 / 娃娃", example: "きれいな人形[にんぎょう]が飾[かざ]ってあります。\n(補充) 操[あやつ]り人形[にんぎょう] (傀儡)。", image: "vocab_30.jpg" },
+            { id: 31, kanji: "花瓶", reading: "かびん", meaning: "花瓶", example: "花瓶[かびん]に花[はな]が入[い]れてあります。", image: "vocab_31.jpg" },
+            { id: 32, kanji: "鏡", reading: "かがみ", meaning: "鏡子", example: "鏡[かがみ]で顔[かお]を見[み]ます。\n(補充) 幸子[さちこ]は女性[じょせい]の鏡[かがみ]だ (幸子是女性的楷模)。", image: "vocab_32.jpg" },
+            { id: 33, kanji: "引き出し", reading: "ひきだし", meaning: "抽屜", example: "はさみは引[ひ]き出[だ]しに入[い]れてあります。\n(補充) 才能[さいのう]を引[ひ]き出[だ]す (發揮才能)。", image: "vocab_33.jpg" },
+            { id: 34, kanji: "玄関", reading: "げんかん", meaning: "玄關 / 門口", example: "玄関[げんかん]がきれいに掃除[そうじ]してあります。\n(補充) 玄関払[げんかんばら]い (閉門羹)。", image: "vocab_34.jpg" },
+            { id: 35, kanji: "廊下", reading: "ろうか", meaning: "走廊", example: "廊下[ろうか]に立[た]たないでください。", image: "vocab_35.jpg" },
+            { id: 36, kanji: "壁", reading: "かべ", meaning: "牆壁", example: "壁[かべ]に絵[え]が掛[か]けてあります。\n(補充) 金城鉄壁[きんじょうてっぺき] (銅牆鐵壁)。", image: "vocab_36.jpg" },
+            { id: 37, kanji: "池", reading: "いけ", meaning: "池塘", example: "公園[こうえん]に大[おお]きな池[いけ]があります。", image: "vocab_37.jpg" },
+            { id: 38, kanji: "交番", reading: "こうばん", meaning: "派出所", example: "駅前[えきまえ]に交番[こうばん]があります。", image: "vocab_38.jpg" },
+            { id: 39, kanji: "元の所", reading: "もとのところ", meaning: "原來的地方", example: "使[つか]ったら、元[もと]の所[ところ]に戻[もど]してください。", image: "vocab_39.jpg" },
+            { id: 40, kanji: "周り", reading: "まわり", meaning: "周圍", example: "駅[えき]の周[まわ]りに店[みせ]がたくさんあります。\n(補充) 身[み]の回[まわ]りの品[しな] (隨身物品)。", image: "vocab_40.jpg" },
+            { id: 41, kanji: "真ん中", reading: "まんなか", meaning: "正中間", example: "部屋[へや]の真[ま]ん中[なか]にテーブルがあります。", image: "vocab_41.jpg" },
+            { id: 42, kanji: "隅", reading: "すみ", meaning: "角落", example: "部屋[へや]の隅[すみ]にごみ箱[ばこ]が置[お]いてあります。\n(補充) 片隅[かたすみ] (角落)。", image: "vocab_42.jpg" },
+            { id: 43, kanji: "まだ", reading: "まだ", meaning: "還 / 尚未", example: "あの映画[えいが]はまだ見[み]ていません。", image: "vocab_43.jpg" },
+            { id: 44, kanji: "～ほど", reading: "～ほど", meaning: "～那樣的程度", example: "日本[にほん]ほど地震[じしん]が多[おお]い国[くに]はありません。", image: "vocab_44.jpg" },
+            { id: 45, kanji: "予定表", reading: "よていひょう", meaning: "預定表 / 行程表", example: "壁[かべ]に予定表[よていひょう]が貼[は]ってあります。", image: "vocab_45.jpg" },
+            { id: 46, kanji: "ごみ", reading: "ごみ", meaning: "垃圾", example: "ごみを捨[す]てます。", image: "vocab_46.jpg" },
+            { id: 47, kanji: "生活", reading: "せいかつ", meaning: "生活", example: "日本[にほん]の生活[せいかつ]に慣[な]れましたか。", image: "vocab_47.jpg" },
+            { id: 48, kanji: "懐中電灯", reading: "かいちゅうでんとう", meaning: "手電筒", example: "懐中電灯[かいちゅうでんとう]を準備[じゅんび]しておきます。\n(補充) 懐中[かいちゅう]無一物[むいちぶつ] (身無分文)。", image: "vocab_48.jpg" }
+        ];
+
+        // 假名標註組件 (Ruby Text)
+        const Furigana = ({ text }) => {
+            if (!text) return null;
+            return (
+                <>
+                    {text.split('\n').map((line, i) => (
+                        <div key={i} className={i > 0 ? "mt-2 pt-2 border-t border-indigo-100/50" : ""}>
+                            {(() => {
+                                const regex = /([\u4e00-\u9fa5]+)\[(.*?)\]/g;
+                                const parts = [];
+                                let lastIndex = 0;
+                                let match;
+
+                                while ((match = regex.exec(line)) !== null) {
+                                    if (match.index > lastIndex) {
+                                        parts.push(line.substring(lastIndex, match.index));
+                                    }
+                                    parts.push(
+                                        <ruby key={match.index} className="mx-0.5 font-normal">
+                                            {match[1]}
+                                            <rt>{match[2]}</rt>
+                                        </ruby>
+                                    );
+                                    lastIndex = regex.lastIndex;
+                                }
+                                if (lastIndex < line.length) {
+                                    parts.push(line.substring(lastIndex));
+                                }
+                                return <span>{parts}</span>;
+                            })()}
+                        </div>
+                    ))}
+                </>
+            );
+        };
+
+        const App = () => {
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [isFlipped, setIsFlipped] = useState(false);
+            const word = vocabularyData[currentIndex];
+
+            const speak = useCallback((text) => {
+                const cleanText = text.replace(/\[.*?\]/g, ""); // 移除注音
+                // 移除括號內的補充說明 (中文) 避免朗讀錯誤
+                const jpOnly = cleanText.replace(/\(.*?\)/g, "").replace(/（.*?）/g, "");
+                
+                const utterance = new SpeechSynthesisUtterance(jpOnly);
+                utterance.lang = 'ja-JP';
+                utterance.rate = 0.85; // 稍微放慢語速
+                window.speechSynthesis.speak(utterance);
+            }, []);
+
+            const handleNext = useCallback(() => {
+                setIsFlipped(false);
+                setTimeout(() => setCurrentIndex((prev) => (prev + 1) % vocabularyData.length), 300);
+            }, []);
+
+            const handlePrev = useCallback(() => {
+                setIsFlipped(false);
+                setTimeout(() => setCurrentIndex((prev) => (prev - 1 + vocabularyData.length) % vocabularyData.length), 300);
+            }, []);
+            
+            // 鍵盤控制
+            useEffect(() => {
+                const handleKeyDown = (e) => {
+                    if (e.key === 'ArrowRight') handleNext();
+                    if (e.key === 'ArrowLeft') handlePrev();
+                    if (e.key === ' ' || e.key === 'Enter') setIsFlipped(prev => !prev);
+                };
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, [handleNext, handlePrev]);
+
+            return (
+                <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-indigo-50 to-blue-100">
+                    <div className="w-full max-w-md mb-4 flex justify-between items-center">
+                        <h1 className="text-2xl font-bold text-indigo-900 flex items-center gap-2">
+                            <Sparkles className="text-yellow-500 fill-yellow-500" size={24} />
+                            第30課 單字卡
+                        </h1>
+                        <div className="text-sm font-bold bg-white px-3 py-1 rounded-full shadow-sm text-indigo-600 border border-indigo-100">
+                            {currentIndex + 1} / {vocabularyData.length}
+                        </div>
+                    </div>
+
+                    <div className="relative w-full max-w-md h-[550px] perspective-1000 group select-none">
+                        <div 
+                            className={`w-full h-full relative transform-style-3d cursor-pointer card-inner ${isFlipped ? 'rotate-y-180' : ''}`}
+                            onClick={() => setIsFlipped(!isFlipped)}
+                        >
+                            {/* 正面 */}
+                            <div className="absolute w-full h-full backface-hidden bg-white rounded-3xl shadow-2xl overflow-hidden border border-white flex flex-col">
+                                <div className="h-[55%] bg-gray-100 relative overflow-hidden group-hover:brightness-95 transition-all">
+                                    <img 
+                                        src={`images/${word.image}`} 
+                                        alt={word.kanji}
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src = `https://placehold.co/600x400/e0e7ff/4f46e5?text=${word.kanji}`;
+                                        }}
+                                    />
+                                    <div className="absolute top-3 left-3 bg-black/40 backdrop-blur-md text-white text-xs px-2 py-1 rounded-md border border-white/20">
+                                        No. {word.id}
+                                    </div>
+                                    <div className="absolute bottom-3 right-3 bg-white/90 text-indigo-600 text-xs px-2 py-1 rounded-full shadow-lg flex items-center gap-1">
+                                        <Info size={12} /> 點擊翻轉
+                                    </div>
+                                </div>
+                                
+                                <div className="flex-1 flex flex-col items-center justify-center p-6 bg-white relative">
+                                    <div className="text-center">
+                                        <h2 className="text-5xl font-black text-gray-800 mb-3 tracking-wide">{word.kanji}</h2>
+                                        <p className="text-xl text-indigo-500 font-bold">{word.reading}</p>
+                                    </div>
+                                    
+                                    <button 
+                                        className="absolute bottom-6 p-3 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:scale-110 transition-all shadow-sm active:scale-95"
+                                        onClick={(e) => { e.stopPropagation(); speak(word.reading); }}
+                                    >
+                                        <Volume2 size={24} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* 背面 */}
+                            <div className="absolute w-full h-full backface-hidden rotate-y-180 bg-white rounded-3xl shadow-2xl overflow-hidden border border-white flex flex-col">
+                                <div className="bg-indigo-600 p-6 text-white text-center relative overflow-hidden">
+                                    <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIvPjwvc3ZnPg==')] opacity-30"></div>
+                                    <h2 className="text-3xl font-bold mb-2 relative z-10">{word.kanji}</h2>
+                                    <p className="opacity-90 text-lg relative z-10 font-medium">{word.meaning}</p>
+                                </div>
+                                
+                                <div className="flex-1 p-6 flex flex-col bg-white overflow-hidden">
+                                    <div className="flex items-center gap-2 mb-3 text-indigo-500 font-bold text-sm uppercase tracking-wider">
+                                        <BookOpen size={16} />
+                                        <span>例句與補充</span>
+                                    </div>
+                                    
+                                    <div className="flex-1 bg-indigo-50/50 rounded-2xl p-5 border border-indigo-100 overflow-y-auto no-scrollbar relative">
+                                        <div className="text-xl text-gray-700 leading-relaxed font-medium">
+                                            <Furigana text={word.example} />
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-4 flex justify-center">
+                                        <button 
+                                            className="flex items-center gap-2 px-6 py-3 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 transition-all active:scale-95 font-medium"
+                                            onClick={(e) => { e.stopPropagation(); speak(word.example); }}
+                                        >
+                                            <Volume2 size={18} />
+                                            <span>朗讀例句</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-6 mt-8 w-full max-w-md justify-center">
+                        <button 
+                            onClick={handlePrev} 
+                            className="p-4 rounded-full bg-white shadow-lg shadow-indigo-100 text-gray-400 hover:text-indigo-600 hover:shadow-xl hover:-translate-y-1 transition-all active:scale-95 active:translate-y-0"
+                            title="上一個 (Left Arrow)"
+                        >
+                            <ChevronLeft size={28} />
+                        </button>
+                        
+                        <button 
+                            onClick={() => { setIsFlipped(false); setCurrentIndex(0); }}
+                            className="p-4 rounded-full bg-white shadow-lg shadow-indigo-100 text-gray-400 hover:text-indigo-600 hover:shadow-xl hover:-translate-y-1 transition-all active:scale-95 active:translate-y-0"
+                            title="重新開始"
+                        >
+                            <RotateCcw size={24} />
+                        </button>
+
+                        <button 
+                            onClick={handleNext} 
+                            className="p-4 rounded-full bg-white shadow-lg shadow-indigo-100 text-gray-400 hover:text-indigo-600 hover:shadow-xl hover:-translate-y-1 transition-all active:scale-95 active:translate-y-0"
+                            title="下一個 (Right Arrow)"
+                        >
+                            <ChevronRight size={28} />
+                        </button>
+                    </div>
+                    
+                    <div className="mt-6 text-xs text-gray-400 text-center">
+                        可以使用鍵盤 ← → 切換，空白鍵翻轉
+                    </div>
+                </div>
+            );
+        };
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
