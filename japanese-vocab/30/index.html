@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大家的日本語 第30課 - 完整加強版單字卡</title>
+    <title>大家的日本語 第30課 - 終極完整版單字卡</title>
     
     <!-- 1. 載入 Tailwind CSS (樣式) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -33,7 +33,6 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* 卡片翻轉動畫優化 */
         .card-inner { transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
     </style>
 </head>
@@ -45,30 +44,106 @@
         import { createRoot } from 'react-dom/client';
         import { ChevronLeft, ChevronRight, RotateCcw, Volume2, BookOpen, Star, Sparkles, Image as ImageIcon, Info } from 'lucide-react';
 
-        // 完整 48 個單字資料庫
+        // 完整 48 個單字資料庫 (已補齊所有圖片補充例句)
         const vocabularyData = [
             // --- 動詞 ---
-            { id: 1, kanji: "貼ります", reading: "はります", meaning: "貼 / 張貼", example: "壁[かべ]にポスターが貼[は]ってあります。", image: "vocab_1.jpg" },
-            { id: 2, kanji: "掛けます", reading: "かけます", meaning: "掛 / 懸掛 / 花費", example: "カレンダーが掛[か]けてあります。\n(補充) 教養[きょうよう]を鼻[はな]に掛[か]ける (炫耀教養)。", image: "vocab_2.jpg" },
-            { id: 3, kanji: "飾ります", reading: "かざります", meaning: "裝飾 / 陳列", example: "部屋[へや]に花[はな]が飾[かざ]ってあります。\n(補充) 上辺[うわべ]を飾[かざ]る (粉飾表面)。", image: "vocab_3.jpg" },
-            { id: 4, kanji: "並べます", reading: "ならべます", meaning: "排列", example: "机[つくえ]を二列[にれつ]に並[なら]べます。", image: "vocab_4.jpg" },
-            { id: 5, kanji: "植えます", reading: "うえます", meaning: "種植 / 培養", example: "庭[にわ]に木[き]が植[う]えてあります。\n(補充) 道徳観念[どうとくかんねん]を植[う]える (灌輸道德觀念)。", image: "vocab_5.jpg" },
-            { id: 6, kanji: "戻します", reading: "もどします", meaning: "歸還 / 放回 / 嘔吐", example: "本[ほん]を棚[たな]に戻[もど]します。\n(補充) 子供[こども]が食[た]べたものを戻[もど]す (小孩吐了)。", image: "vocab_6.jpg" },
-            { id: 7, kanji: "まとめます", reading: "まとめます", meaning: "總結 / 整理", example: "レポートをまとめます。\n(補充) 荷物[にもつ]をまとめる (打包行李)。", image: "vocab_7.jpg" },
-            { id: 8, kanji: "片づけます", reading: "かたづけます", meaning: "收拾 / 清理", example: "道具[どうぐ]を片[かた]づけます。", image: "vocab_8.jpg" },
-            { id: 9, kanji: "しまいます", reading: "しまいます", meaning: "收拾 / 放入 / 藏起來", example: "はんこは引[ひ]き出[だ]しにしまってあります。\n(補充) 店[みせ]をしまう (打烊)。", image: "vocab_9.jpg" },
-            { id: 10, kanji: "決めます", reading: "きめます", meaning: "決定", example: "旅行[りょこう]の予定[よてい]を決[き]めます。\n(補充) 腹[はら]を決[き]める (下定決心)。", image: "vocab_10.jpg" },
-            { id: 11, kanji: "知らせます", reading: "しらせます", meaning: "通知", example: "みんなに予定[よてい]を知[し]らせます。", image: "vocab_11.jpg" },
-            { id: 12, kanji: "相談します", reading: "そうだんします", meaning: "商量", example: "先生[せんせい]に相談[そうだん]します。", image: "vocab_12.jpg" },
-            { id: 13, kanji: "予習します", reading: "よしゅうします", meaning: "預習", example: "授業[じゅぎょう]の前[まえ]に予習[よしゅう]しておきます。", image: "vocab_13.jpg" },
-            { id: 14, kanji: "復習します", reading: "ふくしゅうします", meaning: "複習", example: "家[いえ]へ帰[かえ]ったら、復習[ふくしゅう]します。", image: "vocab_14.jpg" },
-            { id: 15, kanji: "そのままにします", reading: "そのままにします", meaning: "保持原狀 / 置之不理", example: "道具[どうぐ]はそのままにしておいてください。", image: "vocab_15.jpg" },
+            { 
+                id: 1, kanji: "貼ります", reading: "はります", meaning: "貼 / 張貼", 
+                image: "vocab_1.jpg",
+                example: "壁[かべ]にポスターが貼[は]ってあります。\n傷口[きずぐち]に膏薬[こうやく]を貼[は]る (貼膏藥)。\nレッテルを貼[は]る (貼標籤)。" 
+            },
+            { 
+                id: 2, kanji: "掛けます", reading: "かけます", meaning: "掛 / 懸掛 / 花費 / 坐", 
+                image: "vocab_2.jpg",
+                example: "カレンダーが掛[か]けてあります。\n壁[かべ]に絵[え]を掛[か]ける。\nハンガーに服[ふく]を掛[か]ける。\nハンドルに手[て]を掛[か]ける。\n椅子[いす]に腰[こし]を掛[か]ける (坐下)。\n教養[きょうよう]を鼻[はな]に掛[か]ける (炫耀)。\nお目[め]に掛[か]ける (展示)。\n些細[ささい]なことを気[き]に掛[か]ける (在意)。" 
+            },
+            { 
+                id: 3, kanji: "飾ります", reading: "かざります", meaning: "裝飾 / 陳列 / 粉飾", 
+                image: "vocab_3.jpg",
+                example: "部屋[へや]に花[はな]が飾[かざ]ってあります。\n上辺[うわべ]を飾[かざ]る (粉飾表面)。\n有終[ゆうしゅう]の美[び]を飾[かざ]る (完美的句點)。\n人類[じんるい]の歴史[れきし]を飾[かざ]る壮挙[そうきょ] (留名青史的壯舉)。" 
+            },
+            { 
+                id: 4, kanji: "並べます", reading: "ならべます", meaning: "排列 / 陳列", 
+                image: "vocab_4.jpg",
+                example: "机[つくえ]を二列[にれつ]に並[なら]べます。\n店頭[てんとう]に並[なら]べる (陳列在店頭)。\n欠点[けってん]を並[なら]べる (列舉缺點)。" 
+            },
+            { 
+                id: 5, kanji: "植えます", reading: "うえます", meaning: "種植 / 培養 / 灌輸", 
+                image: "vocab_5.jpg",
+                example: "庭[にわ]に木[き]が植[う]えてあります。\n菌[きん]を培養基[ばいようき]に植[う]える (培養菌)。\n道徳観念[どうとくかんねん]を植[う]える (灌輸道德觀念)。\nインプラントを植[う]え込[こ]む (植牙/植入)。\n鉢植[はちう]え (盆栽)。" 
+            },
+            { 
+                id: 6, kanji: "戻します", reading: "もどします", meaning: "歸還 / 放回 / 恢復 / 嘔吐", 
+                image: "vocab_6.jpg",
+                example: "本[ほん]を棚[たな]に戻[もど]します。\n話[はなし]を前[まえ]に戻[もど]す (回到前面的話題)。\n拾得物[しゅうとくぶつ]を持[も]ち主[ぬし]に戻[もど]す (歸還失物)。\n縒[よ]りを戻[もど]す (重修舊好)。\n子供[こども]が食[た]べたものを戻[もど]す (嘔吐)。" 
+            },
+            { 
+                id: 7, kanji: "まとめます", reading: "まとめます", meaning: "總結 / 整理 / 匯整", 
+                image: "vocab_7.jpg",
+                example: "レポートをまとめます。\n論文[ろんぶん]をまとめる。\n荷物[にもつ]をまとめる (打包行李)。" 
+            },
+            { 
+                id: 8, kanji: "片づけます", reading: "かたづけます", meaning: "收拾 / 清理", 
+                image: "vocab_8.jpg",
+                example: "道具[どうぐ]を片[かた]づけます。\n部屋[へや]をきれいに片[かた]づけます。" 
+            },
+            { 
+                id: 9, kanji: "しまいます", reading: "しまいます", meaning: "收拾 / 放入 / 結束", 
+                image: "vocab_9.jpg",
+                example: "はんこは引[ひ]き出[だ]しにしまってあります。\n店[みせ]をしまう (打烊)。\n道具[どうぐ]をしまう。" 
+            },
+            { 
+                id: 10, kanji: "決めます", reading: "きめます", meaning: "決定 / 下決心", 
+                image: "vocab_10.jpg",
+                example: "旅行[りょこう]の予定[よてい]を決[き]めます。\n大学院[だいがくいん]に行[い]くことに決[き]めた。\nここを終[つい]の住処[すみか]と決[き]めた。\n心[こころ]を決[き]める。\n腹[はら]を決[き]める (下定決心)。" 
+            },
+            { 
+                id: 11, kanji: "知らせます", reading: "しらせます", meaning: "通知", 
+                image: "vocab_11.jpg",
+                example: "みんなに予定[よてい]を知[し]らせます。" 
+            },
+            { 
+                id: 12, kanji: "相談します", reading: "そうだんします", meaning: "商量", 
+                image: "vocab_12.jpg",
+                example: "先生[せんせい]に相談[そうだん]します。" 
+            },
+            { 
+                id: 13, kanji: "予習します", reading: "よしゅうします", meaning: "預習", 
+                image: "vocab_13.jpg",
+                example: "授業[じゅぎょう]の前[まえ]に予習[よしゅう]しておきます。" 
+            },
+            { 
+                id: 14, kanji: "復習します", reading: "ふくしゅうします", meaning: "複習", 
+                image: "vocab_14.jpg",
+                example: "家[いえ]へ帰[かえ]ったら、復習[ふくしゅう]します。" 
+            },
+            { 
+                id: 15, kanji: "そのままにします", reading: "そのままにします", meaning: "保持原狀 / 置之不理", 
+                image: "vocab_15.jpg",
+                example: "道具[どうぐ]はそのままにしておいてください。" 
+            },
             
             // --- 圖片補充動詞 ---
-            { id: 16, kanji: "張ります", reading: "はります", meaning: "張開 / 伸展 / 結(冰/網)", example: "池[いけ]に氷[こおり]が張[は]る (池塘結冰)。\n天井[てんじょう]に蜘蛛[くも]の巣[す]が張[は]る (天花板結蜘蛛網)。", image: "vocab_16.jpg" },
-            { id: 17, kanji: "夢を見ます", reading: "ゆめをみます", meaning: "做夢", example: "昨日[きのう]、怖[こわ]い夢[ゆめ]を見[み]ました。\n(補充) 自分[じぶん]の花嫁姿[はなよめすがた]を夢見[ゆめみ]る。", image: "vocab_17.jpg" },
-            { id: 18, kanji: "目が覚めます", reading: "めがさめます", meaning: "醒來 / 覺醒", example: "朝[あさ]６時[じ]に目[め]が覚[さ]めました。\n(補充) 良心[りょうしん]に目覚[めざ]める (良心發現)。", image: "vocab_18.jpg" },
-            { id: 19, kanji: "冷めます", reading: "さめます", meaning: "變冷 / 冷卻 (情感)", example: "スープが冷[さ]める。\n(補充) 冷[さ]めた恋[こい]は戻[もど]らない (逝去的愛回不來)。", image: "vocab_19.jpg" },
+            { 
+                id: 16, kanji: "張ります", reading: "はります", meaning: "張開 / 伸展 / 結(冰/網) / 堅持", 
+                image: "vocab_16.jpg",
+                example: "地中[ちちゅう]深[ふか]く根[ね]が張[は]る。\n池[いけ]に氷[こおり]が張[は]る。\n天井[てんじょう]に蜘蛛[くも]の巣[す]が張[は]る。\n食[た]べ過[す]ぎてお腹[なか]が張[は]る。\nネットを張[は]る。\n非常線[ひじょうせん]を張[は]る。\n浴槽[よくそう]に水[みず]を張[は]る。\n意地[いじ]を張[は]る (逞強)。" 
+            },
+            { 
+                id: 17, kanji: "夢を見ます", reading: "ゆめをみます", meaning: "做夢 / 夢想", 
+                image: "vocab_17.jpg",
+                example: "昨日[きのう]、怖[こわ]い夢[ゆめ]を見[み]ました。\nあなたの夢[ゆめ]を見[み]た。\n自分[じぶん]の花嫁姿[はなよめすがた]を夢見[ゆめみ]る (夢想)。" 
+            },
+            { 
+                id: 18, kanji: "目が覚めます", reading: "めがさめます", meaning: "醒來 / 覺醒", 
+                image: "vocab_18.jpg",
+                example: "朝[あさ]６時[じ]に目[め]が覚[さ]めました。\nすっきりと目覚[めざ]める。\n良心[りょうしん]に目覚[めざ]める (良心發現)。" 
+            },
+            { 
+                id: 19, kanji: "冷めます", reading: "さめます", meaning: "變冷 / 冷卻 (情感)", 
+                image: "vocab_19.jpg",
+                example: "スープが冷[さ]める。\n冷[さ]めた恋[こい]は戻[もど]らない (逝去的愛回不來)。" 
+            },
 
             // --- 名詞 ---
             { id: 20, kanji: "お子さん", reading: "おこさん", meaning: "（別人的）孩子", example: "お子[こ]さんはお元気[げんき]ですか。", image: "vocab_20.jpg" },
@@ -81,25 +156,66 @@
             { id: 27, kanji: "カレンダー", reading: "カレンダー", meaning: "月曆 / 日曆", example: "カレンダーに予定[よてい]を書[か]いておきます。", image: "vocab_27.jpg" },
             { id: 28, kanji: "ポスター", reading: "ポスター", meaning: "海報", example: "壁[かべ]にポスターが貼[は]ってあります。", image: "vocab_28.jpg" },
             { id: 29, kanji: "ごみ箱", reading: "ごみばこ", meaning: "垃圾桶", example: "ごみはごみ箱[ばこ]に捨[す]ててください。", image: "vocab_29.jpg" },
-            { id: 30, kanji: "人形", reading: "にんぎょう", meaning: "人偶 / 娃娃", example: "きれいな人形[にんぎょう]が飾[かざ]ってあります。\n(補充) 操[あやつ]り人形[にんぎょう] (傀儡)。", image: "vocab_30.jpg" },
-            { id: 31, kanji: "花瓶", reading: "かびん", meaning: "花瓶", example: "花瓶[かびん]に花[はな]が入[い]れてあります。", image: "vocab_31.jpg" },
-            { id: 32, kanji: "鏡", reading: "かがみ", meaning: "鏡子", example: "鏡[かがみ]で顔[かお]を見[み]ます。\n(補充) 幸子[さちこ]は女性[じょせい]の鏡[かがみ]だ (幸子是女性的楷模)。", image: "vocab_32.jpg" },
-            { id: 33, kanji: "引き出し", reading: "ひきだし", meaning: "抽屜", example: "はさみは引[ひ]き出[だ]しに入[い]れてあります。\n(補充) 才能[さいのう]を引[ひ]き出[だ]す (發揮才能)。", image: "vocab_33.jpg" },
-            { id: 34, kanji: "玄関", reading: "げんかん", meaning: "玄關 / 門口", example: "玄関[げんかん]がきれいに掃除[そうじ]してあります。\n(補充) 玄関払[げんかんばら]い (閉門羹)。", image: "vocab_34.jpg" },
+            { 
+                id: 30, kanji: "人形", reading: "にんぎょう", meaning: "人偶 / 娃娃", 
+                image: "vocab_30.jpg",
+                example: "きれいな人形[にんぎょう]が飾[かざ]ってあります。\n操[あやつ]り人形[にんぎょう] (傀儡)。\n生[い]き人形[にんぎょう] (栩栩如生)。\n蝋人形[ろうにんぎょう] (蠟像)。" 
+            },
+            { 
+                id: 31, kanji: "花瓶", reading: "かびん", meaning: "花瓶", 
+                image: "vocab_31.jpg",
+                example: "花瓶[かびん]に花[はな]が入[い]れてあります。\nただの飾[かざ]り物[もの] (徒有其表)。" 
+            },
+            { 
+                id: 32, kanji: "鏡", reading: "かがみ", meaning: "鏡子 / 楷模", 
+                image: "vocab_32.jpg",
+                example: "鏡[かがみ]で顔[かお]を見[み]ます。\n幸子[さちこ]は女性[じょせい]の鏡[かがみ]だ (女性楷模)。\n鏡餅[かがみもち] (供奉用的年糕)。" 
+            },
+            { 
+                id: 33, kanji: "引き出し", reading: "ひきだし", meaning: "抽屜 / 提款", 
+                image: "vocab_33.jpg",
+                example: "はさみは引[ひ]き出[だ]しに入[い]れてあります。\n五万円[ごまんえん]を引[ひ]き出[だ]す。\n才能[さいのう]を引[ひ]き出[だ]す (發揮才能)。" 
+            },
+            { 
+                id: 34, kanji: "玄関", reading: "げんかん", meaning: "玄關 / 入門", 
+                image: "vocab_34.jpg",
+                example: "玄関[げんかん]がきれいに掃除[そうじ]してあります。\n奥深[おくぶか]い所[ところ]に入[はい]る門[もん] (玄妙之門)。\n玄関払[げんかんばら]い (閉門羹)。" 
+            },
             { id: 35, kanji: "廊下", reading: "ろうか", meaning: "走廊", example: "廊下[ろうか]に立[た]たないでください。", image: "vocab_35.jpg" },
-            { id: 36, kanji: "壁", reading: "かべ", meaning: "牆壁", example: "壁[かべ]に絵[え]が掛[か]けてあります。\n(補充) 金城鉄壁[きんじょうてっぺき] (銅牆鐵壁)。", image: "vocab_36.jpg" },
+            { 
+                id: 36, kanji: "壁", reading: "かべ", meaning: "牆壁", 
+                image: "vocab_36.jpg",
+                example: "壁[かべ]に絵[え]が掛[か]けてあります。\n金城鉄壁[きんじょうてっぺき] (銅牆鐵壁)。\n近所合壁[きんじょがっぺき] (左鄰右舍)。" 
+            },
             { id: 37, kanji: "池", reading: "いけ", meaning: "池塘", example: "公園[こうえん]に大[おお]きな池[いけ]があります。", image: "vocab_37.jpg" },
             { id: 38, kanji: "交番", reading: "こうばん", meaning: "派出所", example: "駅前[えきまえ]に交番[こうばん]があります。", image: "vocab_38.jpg" },
-            { id: 39, kanji: "元の所", reading: "もとのところ", meaning: "原來的地方", example: "使[つか]ったら、元[もと]の所[ところ]に戻[もど]してください。", image: "vocab_39.jpg" },
-            { id: 40, kanji: "周り", reading: "まわり", meaning: "周圍", example: "駅[えき]の周[まわ]りに店[みせ]がたくさんあります。\n(補充) 身[み]の回[まわ]りの品[しな] (隨身物品)。", image: "vocab_40.jpg" },
-            { id: 41, kanji: "真ん中", reading: "まんなか", meaning: "正中間", example: "部屋[へや]の真[ま]ん中[なか]にテーブルがあります。", image: "vocab_41.jpg" },
-            { id: 42, kanji: "隅", reading: "すみ", meaning: "角落", example: "部屋[へや]の隅[すみ]にごみ箱[ばこ]が置[お]いてあります。\n(補充) 片隅[かたすみ] (角落)。", image: "vocab_42.jpg" },
+            { 
+                id: 39, kanji: "元の所", reading: "もとのところ", meaning: "原來的地方", 
+                image: "vocab_39.jpg",
+                example: "使[つか]ったら、元[もと]の所[ところ]に戻[もど]してください。" 
+            },
+            { 
+                id: 40, kanji: "周り", reading: "まわり", meaning: "周圍", 
+                image: "vocab_40.jpg",
+                example: "駅[えき]の周[まわ]りに店[みせ]がたくさんあります。\nモーターの回[まわ]り具合[ぐあい]。\n身[み]の回[まわ]りの品[しな]。\n一回[ひとまわ]り小[ちい]さい。\n周[まわ]りに迷惑[めいわく]をかける。" 
+            },
+            { 
+                id: 41, kanji: "真ん中", reading: "まんなか", meaning: "正中間", example: "部屋[へや]の真[ま]ん中[なか]にテーブルがあります。", image: "vocab_41.jpg" },
+            { 
+                id: 42, kanji: "隅", reading: "すみ", meaning: "角落", 
+                image: "vocab_42.jpg",
+                example: "部屋[へや]の隅[すみ]にごみ箱[ばこ]が置[お]いてあります。\n片隅[かたすみ]。\n隅田川[すみだがわ]。" 
+            },
             { id: 43, kanji: "まだ", reading: "まだ", meaning: "還 / 尚未", example: "あの映画[えいが]はまだ見[み]ていません。", image: "vocab_43.jpg" },
             { id: 44, kanji: "～ほど", reading: "～ほど", meaning: "～那樣的程度", example: "日本[にほん]ほど地震[じしん]が多[おお]い国[くに]はありません。", image: "vocab_44.jpg" },
             { id: 45, kanji: "予定表", reading: "よていひょう", meaning: "預定表 / 行程表", example: "壁[かべ]に予定表[よていひょう]が貼[は]ってあります。", image: "vocab_45.jpg" },
             { id: 46, kanji: "ごみ", reading: "ごみ", meaning: "垃圾", example: "ごみを捨[す]てます。", image: "vocab_46.jpg" },
             { id: 47, kanji: "生活", reading: "せいかつ", meaning: "生活", example: "日本[にほん]の生活[せいかつ]に慣[な]れましたか。", image: "vocab_47.jpg" },
-            { id: 48, kanji: "懐中電灯", reading: "かいちゅうでんとう", meaning: "手電筒", example: "懐中電灯[かいちゅうでんとう]を準備[じゅんび]しておきます。\n(補充) 懐中[かいちゅう]無一物[むいちぶつ] (身無分文)。", image: "vocab_48.jpg" }
+            { 
+                id: 48, kanji: "懐中電灯", reading: "かいちゅうでんとう", meaning: "手電筒", 
+                image: "vocab_48.jpg",
+                example: "懐中電灯[かいちゅうでんとう]を準備[じゅんび]しておきます。\n懐中[かいちゅう]無一物[むいちぶつ] (身無分文)。\n懐中[かいちゅう]が乏[とぼ]しい (手頭拮据)。" 
+            }
         ];
 
         // 假名標註組件 (Ruby Text)
