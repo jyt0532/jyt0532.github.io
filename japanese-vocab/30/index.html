@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大家的日本語 第30課 - 終極完整版單字卡</title>
+    <title>大家的日本語 第30課 - 終極完整版單字卡 (個別朗讀版)</title>
     
     <!-- 1. 載入 Tailwind CSS (樣式) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -44,213 +44,236 @@
         import { createRoot } from 'react-dom/client';
         import { ChevronLeft, ChevronRight, RotateCcw, Volume2, BookOpen, Star, Sparkles, Image as ImageIcon, Info } from 'lucide-react';
 
-        // 完整 48 個單字資料庫 (已補齊所有圖片補充例句)
+        // 完整 48 個單字資料庫 (含完整中文翻譯)
         const vocabularyData = [
             // --- 動詞 ---
             { 
                 id: 1, kanji: "貼ります", reading: "はります", meaning: "貼 / 張貼", 
                 image: "vocab_1.jpg",
-                example: "壁[かべ]にポスターが貼[は]ってあります。\n傷口[きずぐち]に膏薬[こうやく]を貼[は]る (貼膏藥)。\nレッテルを貼[は]る (貼標籤)。" 
+                example: "壁[かべ]にポスターが貼[は]ってあります。\n(牆壁上貼著海報。)\n傷口[きずぐち]に膏薬[こうやく]を貼[は]る。\n(在傷口上貼膏藥。)\nレッテルを貼[は]る。\n(貼標籤 / 給人定性。)" 
             },
             { 
                 id: 2, kanji: "掛けます", reading: "かけます", meaning: "掛 / 懸掛 / 花費 / 坐", 
                 image: "vocab_2.jpg",
-                example: "カレンダーが掛[か]けてあります。\n壁[かべ]に絵[え]を掛[か]ける。\nハンガーに服[ふく]を掛[か]ける。\nハンドルに手[て]を掛[か]ける。\n椅子[いす]に腰[こし]を掛[か]ける (坐下)。\n教養[きょうよう]を鼻[はな]に掛[か]ける (炫耀)。\nお目[め]に掛[か]ける (展示)。\n些細[ささい]なことを気[き]に掛[か]ける (在意)。" 
+                example: "カレンダーが掛[か]けてあります。\n(掛著月曆。)\n壁[かべ]に絵[え]を掛[か]ける。\n(把畫掛在牆上。)\nハンガーに服[ふく]を掛[か]ける。\n(把衣服掛在衣架上。)\nハンドルに手[て]を掛[か]ける。\n(把手放在方向盤上。)\n椅子[いす]に腰[こし]を掛[か]ける。\n(坐在椅子上。)\n教養[きょうよう]を鼻[はな]に掛[か]ける。\n(炫耀自己的教養 / 自視甚高。)\nお目[め]に掛[か]ける。\n(讓您過目 / 展示。)\n些細[ささい]なことを気[き]に掛[か]ける。\n(在意瑣碎的小事。)" 
             },
             { 
                 id: 3, kanji: "飾ります", reading: "かざります", meaning: "裝飾 / 陳列 / 粉飾", 
                 image: "vocab_3.jpg",
-                example: "部屋[へや]に花[はな]が飾[かざ]ってあります。\n上辺[うわべ]を飾[かざ]る (粉飾表面)。\n有終[ゆうしゅう]の美[び]を飾[かざ]る (完美的句點)。\n人類[じんるい]の歴史[れきし]を飾[かざ]る壮挙[そうきょ] (留名青史的壯舉)。" 
+                example: "部屋[へや]に花[はな]が飾[かざ]ってあります。\n(房間裡裝飾著花。)\n上辺[うわべ]を飾[かざ]る。\n(粉飾外表 / 做表面功夫。)\n有終[ゆうしゅう]の美[び]を飾[かざ]る。\n(畫下完美的句點。)\n人類[じんるい]の歴史[れきし]を飾[かざ]る壮挙[そうきょ]。\n(點綴人類歷史的壯舉。)" 
             },
             { 
                 id: 4, kanji: "並べます", reading: "ならべます", meaning: "排列 / 陳列", 
                 image: "vocab_4.jpg",
-                example: "机[つくえ]を二列[にれつ]に並[なら]べます。\n店頭[てんとう]に並[なら]べる (陳列在店頭)。\n欠点[けってん]を並[なら]べる (列舉缺點)。" 
+                example: "机[つくえ]を二列[にれつ]に並[なら]べます。\n(把桌子排成兩列。)\n店頭[てんとう]に並[なら]べる。\n(陳列在店頭。)\n欠点[けってん]を並[なら]べる。\n(列舉缺點。)" 
             },
             { 
                 id: 5, kanji: "植えます", reading: "うえます", meaning: "種植 / 培養 / 灌輸", 
                 image: "vocab_5.jpg",
-                example: "庭[にわ]に木[き]が植[う]えてあります。\n菌[きん]を培養基[ばいようき]に植[う]える (培養菌)。\n道徳観念[どうとくかんねん]を植[う]える (灌輸道德觀念)。\nインプラントを植[う]え込[こ]む (植牙/植入)。\n鉢植[はちう]え (盆栽)。" 
+                example: "庭[にわ]に木[き]が植[う]えてあります。\n(院子裡種著樹。)\n菌[きん]を培養基[ばいようき]に植[う]える。\n(在培養基裡培養菌。)\n道徳観念[どうとくかんねん]を植[う]える。\n(灌輸道德觀念。)\nインプラントを植[う]え込[こ]む。\n(植入植體 / 植牙。)\n鉢植[はちう]え。\n(盆栽。)" 
             },
             { 
                 id: 6, kanji: "戻します", reading: "もどします", meaning: "歸還 / 放回 / 恢復 / 嘔吐", 
                 image: "vocab_6.jpg",
-                example: "本[ほん]を棚[たな]に戻[もど]します。\n話[はなし]を前[まえ]に戻[もど]す (回到前面的話題)。\n拾得物[しゅうとくぶつ]を持[も]ち主[ぬし]に戻[もど]す (歸還失物)。\n縒[よ]りを戻[もど]す (重修舊好)。\n子供[こども]が食[た]べたものを戻[もど]す (嘔吐)。" 
+                example: "本[ほん]を棚[たな]に戻[もど]します。\n(把書放回架子上。)\n話[はなし]を前[まえ]に戻[もど]す。\n(把話題拉回前面。)\n拾得物[しゅうとくぶつ]を持[も]ち主[ぬし]に戻[もど]す。\n(把撿到的東西還給失主。)\n縒[よ]りを戻[もど]す。\n(重修舊好 / 破鏡重圓。)\n子供[こども]が食[た]べたものを戻[もど]す。\n(小孩把吃的東西吐出來了。)" 
             },
             { 
                 id: 7, kanji: "まとめます", reading: "まとめます", meaning: "總結 / 整理 / 匯整", 
                 image: "vocab_7.jpg",
-                example: "レポートをまとめます。\n論文[ろんぶん]をまとめる。\n荷物[にもつ]をまとめる (打包行李)。" 
+                example: "レポートをまとめます。\n(整理報告。)\n論文[ろんぶん]をまとめる。\n(整理/撰寫論文。)\n荷物[にもつ]をまとめる。\n(打包行李。)" 
             },
             { 
                 id: 8, kanji: "片づけます", reading: "かたづけます", meaning: "收拾 / 清理", 
                 image: "vocab_8.jpg",
-                example: "道具[どうぐ]を片[かた]づけます。\n部屋[へや]をきれいに片[かた]づけます。" 
+                example: "道具[どうぐ]を片[かた]づけます。\n(收拾工具。)\n部屋[へや]をきれいに片[かた]づけます。\n(把房間收拾乾淨。)" 
             },
             { 
                 id: 9, kanji: "しまいます", reading: "しまいます", meaning: "收拾 / 放入 / 結束", 
                 image: "vocab_9.jpg",
-                example: "はんこは引[ひ]き出[だ]しにしまってあります。\n店[みせ]をしまう (打烊)。\n道具[どうぐ]をしまう。" 
+                example: "はんこは引[ひ]き出[だ]しにしまってあります。\n(印章收在抽屜裡。)\n店[みせ]をしまう。\n(打烊 / 歇業。)\n道具[どうぐ]をしまう。\n(收拾工具。)" 
             },
             { 
                 id: 10, kanji: "決めます", reading: "きめます", meaning: "決定 / 下決心", 
                 image: "vocab_10.jpg",
-                example: "旅行[りょこう]の予定[よてい]を決[き]めます。\n大学院[だいがくいん]に行[い]くことに決[き]めた。\nここを終[つい]の住処[すみか]と決[き]めた。\n心[こころ]を決[き]める。\n腹[はら]を決[き]める (下定決心)。" 
+                example: "旅行[りょこう]の予定[よてい]を決[き]めます。\n(決定旅行計畫。)\n大学院[だいがくいん]に行[い]くことに決[き]めた。\n(決定要去研究所。)\nここを終[つい]の住処[すみか]と決[き]めた。\n(決定這裡為終老的住所。)\n心[こころ]を決[き]める。\n(下定決心。)\n腹[はら]を決[き]める。\n(下定決心 / 痛下決心。)" 
             },
             { 
                 id: 11, kanji: "知らせます", reading: "しらせます", meaning: "通知", 
                 image: "vocab_11.jpg",
-                example: "みんなに予定[よてい]を知[し]らせます。" 
+                example: "みんなに予定[よてい]を知[し]らせます。\n(通知大家計畫。)" 
             },
             { 
                 id: 12, kanji: "相談します", reading: "そうだんします", meaning: "商量", 
                 image: "vocab_12.jpg",
-                example: "先生[せんせい]に相談[そうだん]します。" 
+                example: "先生[せんせい]に相談[そうだん]します。\n(和老師商量。)" 
             },
             { 
                 id: 13, kanji: "予習します", reading: "よしゅうします", meaning: "預習", 
                 image: "vocab_13.jpg",
-                example: "授業[じゅぎょう]の前[まえ]に予習[よしゅう]しておきます。" 
+                example: "授業[じゅぎょう]の前[まえ]に予習[よしゅう]しておきます。\n(上課前先預習。)" 
             },
             { 
                 id: 14, kanji: "復習します", reading: "ふくしゅうします", meaning: "複習", 
                 image: "vocab_14.jpg",
-                example: "家[いえ]へ帰[かえ]ったら、復習[ふくしゅう]します。" 
+                example: "家[いえ]へ帰[かえ]ったら、復習[ふくしゅう]します。\n(回家後要複習。)" 
             },
             { 
                 id: 15, kanji: "そのままにします", reading: "そのままにします", meaning: "保持原狀 / 置之不理", 
                 image: "vocab_15.jpg",
-                example: "道具[どうぐ]はそのままにしておいてください。" 
+                example: "道具[どうぐ]はそのままにしておいてください。\n(工具請保持原樣 / 不要收。)" 
             },
             
             // --- 圖片補充動詞 ---
             { 
                 id: 16, kanji: "張ります", reading: "はります", meaning: "張開 / 伸展 / 結(冰/網) / 堅持", 
                 image: "vocab_16.jpg",
-                example: "地中[ちちゅう]深[ふか]く根[ね]が張[は]る。\n池[いけ]に氷[こおり]が張[は]る。\n天井[てんじょう]に蜘蛛[くも]の巣[す]が張[は]る。\n食[た]べ過[す]ぎてお腹[なか]が張[は]る。\nネットを張[は]る。\n非常線[ひじょうせん]を張[は]る。\n浴槽[よくそう]に水[みず]を張[は]る。\n意地[いじ]を張[は]る (逞強)。" 
+                example: "地中[ちちゅう]深[ふか]く根[ね]が張[は]る。\n(根深植地底。)\n池[いけ]に氷[こおり]が張[は]る。\n(池塘結冰。)\n天井[てんじょう]に蜘蛛[くも]の巣[す]が張[は]る。\n(天花板結蜘蛛網。)\n食[た]べ過[す]ぎてお腹[なか]が張[は]る。\n(吃太多肚子脹。)\nネットを張[は]る。\n(架設網子 / 防護網。)\n非常線[ひじょうせん]を張[は]る。\n(拉起封鎖線。)\n浴槽[よくそう]に水[みず]を張[は]る。\n(在浴缸裡放水。)\n意地[いじ]を張[は]る。\n(逞強 / 固執己見。)" 
             },
             { 
                 id: 17, kanji: "夢を見ます", reading: "ゆめをみます", meaning: "做夢 / 夢想", 
                 image: "vocab_17.jpg",
-                example: "昨日[きのう]、怖[こわ]い夢[ゆめ]を見[み]ました。\nあなたの夢[ゆめ]を見[み]た。\n自分[じぶん]の花嫁姿[はなよめすがた]を夢見[ゆめみ]る (夢想)。" 
+                example: "昨日[きのう]、怖[こわ]い夢[ゆめ]を見[み]ました。\n(昨天做了可怕的夢。)\nあなたの夢[ゆめ]を見[み]た。\n(夢到了你。)\n自分[じぶん]の花嫁姿[はなよめすがた]を夢見[ゆめみ]る。\n(夢想自己當新娘的樣子。)" 
             },
             { 
                 id: 18, kanji: "目が覚めます", reading: "めがさめます", meaning: "醒來 / 覺醒", 
                 image: "vocab_18.jpg",
-                example: "朝[あさ]６時[じ]に目[め]が覚[さ]めました。\nすっきりと目覚[めざ]める。\n良心[りょうしん]に目覚[めざ]める (良心發現)。" 
+                example: "朝[あさ]６時[じ]に目[め]が覚[さ]めました。\n(早上6點醒來了。)\nすっきりと目覚[めざ]める。\n(清醒地醒來。)\n良心[りょうしん]に目覚[めざ]める。\n(良心發現 / 良心覺醒。)" 
             },
             { 
                 id: 19, kanji: "冷めます", reading: "さめます", meaning: "變冷 / 冷卻 (情感)", 
                 image: "vocab_19.jpg",
-                example: "スープが冷[さ]める。\n冷[さ]めた恋[こい]は戻[もど]らない (逝去的愛回不來)。" 
+                example: "スープが冷[さ]める。\n(湯冷掉了。)\n冷[さ]めた恋[こい]は戻[もど]らない。\n(冷掉的戀情回不來了。)" 
             },
 
             // --- 名詞 ---
-            { id: 20, kanji: "お子さん", reading: "おこさん", meaning: "（別人的）孩子", example: "お子[こ]さんはお元気[げんき]ですか。", image: "vocab_20.jpg" },
-            { id: 21, kanji: "授業", reading: "じゅぎょう", meaning: "上課 / 課程", example: "授業[じゅぎょう]が始[はじ]まります。", image: "vocab_21.jpg" },
-            { id: 22, kanji: "講義", reading: "こうぎ", meaning: "講義 / 講課 (大學)", example: "大学[だいがく]の講義[こうぎ]を聞[き]きます。", image: "vocab_22.jpg" },
-            { id: 23, kanji: "ミーティング", reading: "ミーティング", meaning: "會議 (Meeting)", example: "これからミーティングがあります。", image: "vocab_23.jpg" },
-            { id: 24, kanji: "予定", reading: "よてい", meaning: "預定 / 計畫", example: "今週[こんしゅう]の予定[よてい]を教[おし]えてください。", image: "vocab_24.jpg" },
-            { id: 25, kanji: "お知らせ", reading: "おしらせ", meaning: "通知 / 佈告", example: "掲示板[けいじばん]にお知[し]らせが貼[は]ってあります。", image: "vocab_25.jpg" },
-            { id: 26, kanji: "案内書", reading: "あんないしょ", meaning: "指南書 / 導覽書", example: "旅行[りょこう]の案内書[あんないしょ]を読[よ]みます。", image: "vocab_26.jpg" },
-            { id: 27, kanji: "カレンダー", reading: "カレンダー", meaning: "月曆 / 日曆", example: "カレンダーに予定[よてい]を書[か]いておきます。", image: "vocab_27.jpg" },
-            { id: 28, kanji: "ポスター", reading: "ポスター", meaning: "海報", example: "壁[かべ]にポスターが貼[は]ってあります。", image: "vocab_28.jpg" },
-            { id: 29, kanji: "ごみ箱", reading: "ごみばこ", meaning: "垃圾桶", example: "ごみはごみ箱[ばこ]に捨[す]ててください。", image: "vocab_29.jpg" },
+            { id: 20, kanji: "お子さん", reading: "おこさん", meaning: "（別人的）孩子", example: "お子[こ]さんはお元気[げんき]ですか。\n(您的孩子好嗎？)", image: "vocab_20.jpg" },
+            { id: 21, kanji: "授業", reading: "じゅぎょう", meaning: "上課 / 課程", example: "授業[じゅぎょう]が始[はじ]まります。\n(開始上課了。)", image: "vocab_21.jpg" },
+            { id: 22, kanji: "講義", reading: "こうぎ", meaning: "講義 / 講課 (大學)", example: "大学[だいがく]の講義[こうぎ]を聞[き]きます。\n(聽大學的講課。)", image: "vocab_22.jpg" },
+            { id: 23, kanji: "ミーティング", reading: "ミーティング", meaning: "會議 (Meeting)", example: "これからミーティングがあります。\n(等一下有會議。)", image: "vocab_23.jpg" },
+            { id: 24, kanji: "予定", reading: "よてい", meaning: "預定 / 計畫", example: "今週[こんしゅう]の予定[よてい]を教[おし]えてください。\n(請告訴我這週的計畫。)", image: "vocab_24.jpg" },
+            { id: 25, kanji: "お知らせ", reading: "おしらせ", meaning: "通知 / 佈告", example: "掲示板[けいじばん]にお知[し]らせが貼[は]ってあります。\n(公告欄上貼著通知。)", image: "vocab_25.jpg" },
+            { id: 26, kanji: "案内書", reading: "あんないしょ", meaning: "指南書 / 導覽書", example: "旅行[りょこう]の案内書[あんないしょ]を読[よ]みます。\n(閱讀旅行指南。)", image: "vocab_26.jpg" },
+            { id: 27, kanji: "カレンダー", reading: "カレンダー", meaning: "月曆 / 日曆", example: "カレンダーに予定[よてい]を書[か]いておきます。\n(先把計畫寫在月曆上。)", image: "vocab_27.jpg" },
+            { id: 28, kanji: "ポスター", reading: "ポスター", meaning: "海報", example: "壁[かべ]にポスターが貼[は]ってあります。\n(牆上貼著海報。)", image: "vocab_28.jpg" },
+            { id: 29, kanji: "ごみ箱", reading: "ごみばこ", meaning: "垃圾桶", example: "ごみはごみ箱[ばこ]に捨[す]ててください。\n(垃圾請丟在垃圾桶。)", image: "vocab_29.jpg" },
             { 
                 id: 30, kanji: "人形", reading: "にんぎょう", meaning: "人偶 / 娃娃", 
                 image: "vocab_30.jpg",
-                example: "きれいな人形[にんぎょう]が飾[かざ]ってあります。\n操[あやつ]り人形[にんぎょう] (傀儡)。\n生[い]き人形[にんぎょう] (栩栩如生)。\n蝋人形[ろうにんぎょう] (蠟像)。" 
+                example: "きれいな人形[にんぎょう]が飾[かざ]ってあります。\n(裝飾著漂亮的人偶。)\n操[あやつ]り人形[にんぎょう]。\n(傀儡 / 提線木偶。)\n生[い]き人形[にんぎょう]。\n(栩栩如生的人偶。)\n蝋人形[ろうにんぎょう]。\n(蠟像。)" 
             },
             { 
                 id: 31, kanji: "花瓶", reading: "かびん", meaning: "花瓶", 
                 image: "vocab_31.jpg",
-                example: "花瓶[かびん]に花[はな]が入[い]れてあります。\nただの飾[かざ]り物[もの] (徒有其表)。" 
+                example: "花瓶[かびん]に花[はな]が入[い]れてあります。\n(花瓶裡插著花。)\nただの飾[かざ]り物[もの]。\n(只是個裝飾品 / 徒有其表。)" 
             },
             { 
                 id: 32, kanji: "鏡", reading: "かがみ", meaning: "鏡子 / 楷模", 
                 image: "vocab_32.jpg",
-                example: "鏡[かがみ]で顔[かお]を見[み]ます。\n幸子[さちこ]は女性[じょせい]の鏡[かがみ]だ (女性楷模)。\n鏡餅[かがみもち] (供奉用的年糕)。" 
+                example: "鏡[かがみ]で顔[かお]を見[み]ます。\n(照鏡子看臉。)\n幸子[さちこ]は女性[じょせい]の鏡[かがみ]だ。\n(幸子是女性的楷模。)\n鏡餅[かがみもち]。\n(鏡餅 / 供奉用的年糕。)" 
             },
             { 
                 id: 33, kanji: "引き出し", reading: "ひきだし", meaning: "抽屜 / 提款", 
                 image: "vocab_33.jpg",
-                example: "はさみは引[ひ]き出[だ]しに入[い]れてあります。\n五万円[ごまんえん]を引[ひ]き出[だ]す。\n才能[さいのう]を引[ひ]き出[だ]す (發揮才能)。" 
+                example: "はさみは引[ひ]き出[だ]しに入[い]れてあります。\n(剪刀放在抽屜裡。)\n五万円[ごまんえん]を引[ひ]き出[だ]す。\n(提領五萬圓。)\n才能[さいのう]を引[ひ]き出[だ]す。\n(發揮 / 引導出才能。)" 
             },
             { 
                 id: 34, kanji: "玄関", reading: "げんかん", meaning: "玄關 / 入門", 
                 image: "vocab_34.jpg",
-                example: "玄関[げんかん]がきれいに掃除[そうじ]してあります。\n奥深[おくぶか]い所[ところ]に入[はい]る門[もん] (玄妙之門)。\n玄関払[げんかんばら]い (閉門羹)。" 
+                example: "玄関[げんかん]がきれいに掃除[そうじ]してあります。\n(玄關打掃得很乾淨。)\n奥深[おくぶか]い所[ところ]に入[はい]る門[もん]。\n(通往深奧之處的門 / 玄妙之道。)\n玄関払[げんかんばら]い。\n(拒之門外 / 閉門羹。)" 
             },
-            { id: 35, kanji: "廊下", reading: "ろうか", meaning: "走廊", example: "廊下[ろうか]に立[た]たないでください。", image: "vocab_35.jpg" },
+            { id: 35, kanji: "廊下", reading: "ろうか", meaning: "走廊", example: "廊下[ろうか]に立[た]たないでください。\n(請不要站在走廊上。)", image: "vocab_35.jpg" },
             { 
                 id: 36, kanji: "壁", reading: "かべ", meaning: "牆壁", 
                 image: "vocab_36.jpg",
-                example: "壁[かべ]に絵[え]が掛[か]けてあります。\n金城鉄壁[きんじょうてっぺき] (銅牆鐵壁)。\n近所合壁[きんじょがっぺき] (左鄰右舍)。" 
+                example: "壁[かべ]に絵[え]が掛[か]けてあります。\n(牆上掛著畫。)\n金城鉄壁[きんじょうてっぺき]。\n(銅牆鐵壁 / 防守堅固。)\n近所合壁[きんじょがっぺき]。\n(左鄰右舍 / 隔壁鄰居。)" 
             },
-            { id: 37, kanji: "池", reading: "いけ", meaning: "池塘", example: "公園[こうえん]に大[おお]きな池[いけ]があります。", image: "vocab_37.jpg" },
-            { id: 38, kanji: "交番", reading: "こうばん", meaning: "派出所", example: "駅前[えきまえ]に交番[こうばん]があります。", image: "vocab_38.jpg" },
+            { id: 37, kanji: "池", reading: "いけ", meaning: "池塘", example: "公園[こうえん]に大[おお]きな池[いけ]があります。\n(公園裡有一個大池塘。)", image: "vocab_37.jpg" },
+            { id: 38, kanji: "交番", reading: "こうばん", meaning: "派出所", example: "駅前[えきまえ]に交番[こうばん]があります。\n(車站前有派出所。)", image: "vocab_38.jpg" },
             { 
                 id: 39, kanji: "元の所", reading: "もとのところ", meaning: "原來的地方", 
                 image: "vocab_39.jpg",
-                example: "使[つか]ったら、元[もと]の所[ところ]に戻[もど]してください。" 
+                example: "使[つか]ったら、元[もと]の所[ところ]に戻[もど]してください。\n(用完後請放回原處。)" 
             },
             { 
                 id: 40, kanji: "周り", reading: "まわり", meaning: "周圍", 
                 image: "vocab_40.jpg",
-                example: "駅[えき]の周[まわ]りに店[みせ]がたくさんあります。\nモーターの回[まわ]り具合[ぐあい]。\n身[み]の回[まわ]りの品[しな]。\n一回[ひとまわ]り小[ちい]さい。\n周[まわ]りに迷惑[めいわく]をかける。" 
+                example: "駅[えき]の周[まわ]りに店[みせ]がたくさんあります。\n(車站周圍有很多商店。)\nモーターの回[まわ]り具合[ぐあい]。\n(馬達運轉的狀況。)\n身[み]の回[まわ]りの品[しな]。\n(隨身物品。)\n一回[ひとまわ]り小[ちい]さい。\n(小一圈 / 小一號。)\n周[まわ]りに迷惑[めいわく]をかける。\n(給周遭的人添麻煩。)" 
             },
             { 
-                id: 41, kanji: "真ん中", reading: "まんなか", meaning: "正中間", example: "部屋[へや]の真[ま]ん中[なか]にテーブルがあります。", image: "vocab_41.jpg" },
+                id: 41, kanji: "真ん中", reading: "まんなか", meaning: "正中間", example: "部屋[へや]の真[ま]ん中[なか]にテーブルがあります。\n(房間正中間有一張桌子。)", image: "vocab_41.jpg" },
             { 
                 id: 42, kanji: "隅", reading: "すみ", meaning: "角落", 
                 image: "vocab_42.jpg",
-                example: "部屋[へや]の隅[すみ]にごみ箱[ばこ]が置[お]いてあります。\n片隅[かたすみ]。\n隅田川[すみだがわ]。" 
+                example: "部屋[へや]の隅[すみ]にごみ箱[ばこ]が置[お]いてあります。\n(房間角落放著垃圾桶。)\n片隅[かたすみ]。\n(角落。)\n隅田川[すみだがわ]。\n(隅田川 / 地名。)" 
             },
-            { id: 43, kanji: "まだ", reading: "まだ", meaning: "還 / 尚未", example: "あの映画[えいが]はまだ見[み]ていません。", image: "vocab_43.jpg" },
-            { id: 44, kanji: "～ほど", reading: "～ほど", meaning: "～那樣的程度", example: "日本[にほん]ほど地震[じしん]が多[おお]い国[くに]はありません。", image: "vocab_44.jpg" },
-            { id: 45, kanji: "予定表", reading: "よていひょう", meaning: "預定表 / 行程表", example: "壁[かべ]に予定表[よていひょう]が貼[は]ってあります。", image: "vocab_45.jpg" },
-            { id: 46, kanji: "ごみ", reading: "ごみ", meaning: "垃圾", example: "ごみを捨[す]てます。", image: "vocab_46.jpg" },
-            { id: 47, kanji: "生活", reading: "せいかつ", meaning: "生活", example: "日本[にほん]の生活[せいかつ]に慣[な]れましたか。", image: "vocab_47.jpg" },
+            { id: 43, kanji: "まだ", reading: "まだ", meaning: "還 / 尚未", example: "あの映画[えいが]はまだ見[み]ていません。\n(那部電影還沒看過。)", image: "vocab_43.jpg" },
+            { id: 44, kanji: "～ほど", reading: "～ほど", meaning: "～那樣的程度", example: "日本[にほん]ほど地震[じしん]が多[おお]い国[くに]はありません。\n(沒有像日本地震這麼多的國家了。)", image: "vocab_44.jpg" },
+            { id: 45, kanji: "予定表", reading: "よていひょう", meaning: "預定表 / 行程表", example: "壁[かべ]に予定表[よていひょう]が貼[は]ってあります。\n(牆上貼著行程表。)", image: "vocab_45.jpg" },
+            { id: 46, kanji: "ごみ", reading: "ごみ", meaning: "垃圾", example: "ごみを捨[す]てます。\n(丟垃圾。)", image: "vocab_46.jpg" },
+            { id: 47, kanji: "生活", reading: "せいかつ", meaning: "生活", example: "日本[にほん]の生活[せいかつ]に慣[な]れましたか。\n(習慣日本的生活了嗎？)", image: "vocab_47.jpg" },
             { 
                 id: 48, kanji: "懐中電灯", reading: "かいちゅうでんとう", meaning: "手電筒", 
                 image: "vocab_48.jpg",
-                example: "懐中電灯[かいちゅうでんとう]を準備[じゅんび]しておきます。\n懐中[かいちゅう]無一物[むいちぶつ] (身無分文)。\n懐中[かいちゅう]が乏[とぼ]しい (手頭拮据)。" 
+                example: "懐中電灯[かいちゅうでんとう]を準備[じゅんび]しておきます。\n(先準備好手電筒。)\n懐中[かいちゅう]無一物[むいちぶつ]。\n(身無分文 / 口袋空空。)\n懐中[かいちゅう]が乏[とぼ]しい。\n(手頭拮据 / 沒錢。)" 
             }
         ];
 
-        // 假名標註組件 (Ruby Text)
-        const Furigana = ({ text }) => {
+        // 假名標註與朗讀按鈕組件
+        const Furigana = ({ text, onSpeak }) => {
             if (!text) return null;
             return (
-                <>
-                    {text.split('\n').map((line, i) => (
-                        <div key={i} className={i > 0 ? "mt-2 pt-2 border-t border-indigo-100/50" : ""}>
-                            {(() => {
-                                const regex = /([\u4e00-\u9fa5]+)\[(.*?)\]/g;
-                                const parts = [];
-                                let lastIndex = 0;
-                                let match;
+                <div className="space-y-1">
+                    {text.split('\n').map((line, i) => {
+                        // 判斷是否為翻譯行 (以括號開頭)
+                        const isTranslation = line.trim().startsWith('(') || line.trim().startsWith('（');
+                        const isJapanese = !isTranslation;
+                        
+                        return (
+                            <div key={i} className={`flex items-start gap-3 ${i > 0 && isJapanese ? "mt-4 pt-4 border-t border-indigo-100/50" : ""}`}>
+                                {/* 朗讀按鈕：只在日文行顯示 */}
+                                <div className="flex-shrink-0 mt-0.5">
+                                    {isJapanese ? (
+                                        <button 
+                                            onClick={(e) => { e.stopPropagation(); onSpeak(line); }}
+                                            className="p-1.5 rounded-full bg-indigo-100 text-indigo-500 hover:bg-indigo-500 hover:text-white transition-all shadow-sm active:scale-95"
+                                            title="朗讀此句"
+                                        >
+                                            <Volume2 size={16} />
+                                        </button>
+                                    ) : (
+                                        <div className="w-7"></div> /* 佔位符保持對齊 */
+                                    )}
+                                </div>
+                                
+                                <div className={`flex-1 leading-relaxed ${isTranslation ? "text-gray-500 text-sm font-normal" : "text-gray-800 font-medium text-lg"}`}>
+                                    {(() => {
+                                        const regex = /([\u4e00-\u9fa5]+)\[(.*?)\]/g;
+                                        const parts = [];
+                                        let lastIndex = 0;
+                                        let match;
 
-                                while ((match = regex.exec(line)) !== null) {
-                                    if (match.index > lastIndex) {
-                                        parts.push(line.substring(lastIndex, match.index));
-                                    }
-                                    parts.push(
-                                        <ruby key={match.index} className="mx-0.5 font-normal">
-                                            {match[1]}
-                                            <rt>{match[2]}</rt>
-                                        </ruby>
-                                    );
-                                    lastIndex = regex.lastIndex;
-                                }
-                                if (lastIndex < line.length) {
-                                    parts.push(line.substring(lastIndex));
-                                }
-                                return <span>{parts}</span>;
-                            })()}
-                        </div>
-                    ))}
-                </>
+                                        while ((match = regex.exec(line)) !== null) {
+                                            if (match.index > lastIndex) {
+                                                parts.push(line.substring(lastIndex, match.index));
+                                            }
+                                            parts.push(
+                                                <ruby key={match.index} className="mx-0.5 font-normal">
+                                                    {match[1]}
+                                                    <rt>{match[2]}</rt>
+                                                </ruby>
+                                            );
+                                            lastIndex = regex.lastIndex;
+                                        }
+                                        if (lastIndex < line.length) {
+                                            parts.push(line.substring(lastIndex));
+                                        }
+                                        return <span>{parts}</span>;
+                                    })()}
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
             );
         };
 
@@ -260,13 +283,14 @@
             const word = vocabularyData[currentIndex];
 
             const speak = useCallback((text) => {
-                const cleanText = text.replace(/\[.*?\]/g, ""); // 移除注音
-                // 移除括號內的補充說明 (中文) 避免朗讀錯誤
-                const jpOnly = cleanText.replace(/\(.*?\)/g, "").replace(/（.*?）/g, "");
+                // 移除注音 [xxx]
+                let cleanText = text.replace(/\[.*?\]/g, ""); 
+                // 移除括號內的內容 (通常是中文翻譯，但單句朗讀時通常不含翻譯，不過以防萬一)
+                cleanText = cleanText.replace(/\(.*?\)/g, "").replace(/（.*?）/g, "");
                 
-                const utterance = new SpeechSynthesisUtterance(jpOnly);
+                const utterance = new SpeechSynthesisUtterance(cleanText);
                 utterance.lang = 'ja-JP';
-                utterance.rate = 0.85; // 稍微放慢語速
+                utterance.rate = 0.85; 
                 window.speechSynthesis.speak(utterance);
             }, []);
 
@@ -303,7 +327,7 @@
                         </div>
                     </div>
 
-                    <div className="relative w-full max-w-md h-[550px] perspective-1000 group select-none">
+                    <div className="relative w-full max-w-md h-[600px] perspective-1000 group select-none">
                         <div 
                             className={`w-full h-full relative transform-style-3d cursor-pointer card-inner ${isFlipped ? 'rotate-y-180' : ''}`}
                             onClick={() => setIsFlipped(!isFlipped)}
@@ -345,39 +369,27 @@
 
                             {/* 背面 */}
                             <div className="absolute w-full h-full backface-hidden rotate-y-180 bg-white rounded-3xl shadow-2xl overflow-hidden border border-white flex flex-col">
-                                <div className="bg-indigo-600 p-6 text-white text-center relative overflow-hidden">
+                                <div className="bg-indigo-600 p-5 text-white text-center relative overflow-hidden flex-shrink-0">
                                     <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIvPjwvc3ZnPg==')] opacity-30"></div>
-                                    <h2 className="text-3xl font-bold mb-2 relative z-10">{word.kanji}</h2>
+                                    <h2 className="text-3xl font-bold mb-1 relative z-10">{word.kanji}</h2>
                                     <p className="opacity-90 text-lg relative z-10 font-medium">{word.meaning}</p>
                                 </div>
                                 
-                                <div className="flex-1 p-6 flex flex-col bg-white overflow-hidden">
-                                    <div className="flex items-center gap-2 mb-3 text-indigo-500 font-bold text-sm uppercase tracking-wider">
+                                <div className="flex-1 p-5 flex flex-col bg-white overflow-hidden">
+                                    <div className="flex items-center gap-2 mb-2 text-indigo-500 font-bold text-sm uppercase tracking-wider">
                                         <BookOpen size={16} />
                                         <span>例句與補充</span>
                                     </div>
                                     
-                                    <div className="flex-1 bg-indigo-50/50 rounded-2xl p-5 border border-indigo-100 overflow-y-auto no-scrollbar relative">
-                                        <div className="text-xl text-gray-700 leading-relaxed font-medium">
-                                            <Furigana text={word.example} />
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-4 flex justify-center">
-                                        <button 
-                                            className="flex items-center gap-2 px-6 py-3 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900 transition-all active:scale-95 font-medium"
-                                            onClick={(e) => { e.stopPropagation(); speak(word.example); }}
-                                        >
-                                            <Volume2 size={18} />
-                                            <span>朗讀例句</span>
-                                        </button>
+                                    <div className="flex-1 bg-indigo-50/50 rounded-2xl p-4 border border-indigo-100 overflow-y-auto relative custom-scroll">
+                                        <Furigana text={word.example} onSpeak={speak} />
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-6 mt-8 w-full max-w-md justify-center">
+                    <div className="flex items-center gap-6 mt-6 w-full max-w-md justify-center">
                         <button 
                             onClick={handlePrev} 
                             className="p-4 rounded-full bg-white shadow-lg shadow-indigo-100 text-gray-400 hover:text-indigo-600 hover:shadow-xl hover:-translate-y-1 transition-all active:scale-95 active:translate-y-0"
@@ -403,7 +415,7 @@
                         </button>
                     </div>
                     
-                    <div className="mt-6 text-xs text-gray-400 text-center">
+                    <div className="mt-4 text-xs text-gray-400 text-center">
                         可以使用鍵盤 ← → 切換，空白鍵翻轉
                     </div>
                 </div>
