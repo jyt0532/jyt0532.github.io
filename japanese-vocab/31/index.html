@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大家的日本語 第31課 - 互動單字卡 (筆記完整版)</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18.2.0",
+            "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+            "lucide-react": "https://esm.sh/lucide-react@0.294.0"
+        }
+    }
+    </script>
+
+    <style>
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        ruby { ruby-align: center; }
+        rt { line-height: 1; user-select: none; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-100">
+    <div id="root"></div>
+
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect, useCallback } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { ChevronLeft, ChevronRight, RotateCcw, Volume2, BookOpen, Lightbulb } from 'lucide-react';
+
+        const VocabularySlides = () => {
+            const [currentIndex, setCurrentIndex] = useState(0);
+            const [isFlipped, setIsFlipped] = useState(false);
+
+            const speak = (text) => {
+                let cleanText = text.replace(/\[.*?\]/g, "").replace(/\(.*?\)/g, "").replace(/（.*?）/g, "");
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.lang = 'ja-JP';
+                window.speechSynthesis.speak(utterance);
+            };
+
+            const FuriganaText = ({ text, className = "", showSpeaker = false, speakerColor = "text-gray-400" }) => {
+                if (!text) return null;
+                const lines = text.split('\n');
+                return (
+                    <>
+                        {lines.map((line, lineIndex) => {
+                            const japanesePart = line.split('(')[0].split('（')[0]; 
+                            const regex = /([\u4e00-\u9faf々]+)\[(.*?)\]/g;
+                            const parts = [];
+                            let lastIndex = 0;
+                            let match;
+                            while ((match = regex.exec(line)) !== null) {
+                                if (match.index > lastIndex) parts.push(<span key={`${lineIndex}-${lastIndex}`}>{line.substring(lastIndex, match.index)}</span>);
+                                parts.push(<ruby key={`${lineIndex}-${match.index}`} className="mx-0.5">{match[1]}<rt className="text-[0.55em] text-gray-600 font-normal select-none">{match[2]}</rt></ruby>);
+                                lastIndex = regex.lastIndex;
+                            }
+                            if (lastIndex < line.length) parts.push(<span key={`${lineIndex}-${lastIndex}`}>{line.substring(lastIndex)}</span>);
+
+                            return (
+                                <div key={lineIndex} className={`flex items-start gap-2 ${lineIndex > 0 ? 'mt-3 pt-2 border-t border-dashed border-gray-200' : ''} ${className}`}>
+                                    {showSpeaker && (
+                                        <button onClick={(e) => { e.stopPropagation(); speak(japanesePart); }} className={`mt-1 flex-shrink-0 p-1 rounded-full hover:bg-gray-100 transition-colors ${speakerColor}`} title="朗讀此句">
+                                            <Volume2 size={16} />
+                                        </button>
+                                    )}
+                                    <span className="block flex-1 leading-relaxed">{parts}</span>
+                                </div>
+                            );
+                        })}
+                    </>
+                );
+            };
+
+            // ★★★ 完整筆記資料庫 (依照您的截圖重新輸入) ★★★
+            const vocabularyList = [
+                // --- 核心動詞 ---
+                { 
+                    id: 1, kanji: "続[つづ]けます", reading: "つづけます", meaning: "繼續 / 持續", 
+                    example: "地道[じみち]な努力[どりょく]を続[つづ]ける (持續腳踏實地的努力)\n足踏[あしぶ]みを続[つづ]ける (持續原地踏步)", 
+                    color: "bg-orange-50", accentColor: "text-orange-600", borderColor: "border-orange-200" 
+                },
+                { 
+                    id: 2, kanji: "見[み]つけます", reading: "みつけます", meaning: "找 / 發現", 
+                    example: "仕事[しごと]を見[み]つける ＝ 捜[さが]す (找工作＝搜尋)\n新[あたら]しい彗星[すいせい]を見[み]つける ＝ 発見[はっけん]する (發現新彗星＝發現)\nこれはもう見[み]つけた風景[ふうけい]だね ＝ 見慣[みな]れる (這是已經看過的風景呢＝看慣了)", 
+                    color: "bg-blue-50", accentColor: "text-blue-600", borderColor: "border-blue-200" 
+                },
+                { 
+                    id: 3, kanji: "取[と]ります", reading: "とります", meaning: "取得 / 拿取 / 採取", 
+                    example: "仇[かたき]を取[と]る ＝ 復讐[ふくしゅう]する (報仇＝復仇)\n車間距離[しゃかんきょり]を十分[じゅうぶん]に取[と]る (保持充分的車距)\n手拍子[てびょうし]を取[と]る (打拍子)\n出欠[しゅっけつ]をとる (點名/確認出席)\n取[と]る物[もの]もとりあえず駆[か]けつけた (連東西都沒拿就急忙趕到了)\n命取[いのちと]り：あのスキャンダルが内閣[ないかく]の命取[いのちと]りになった (致命傷：那件醜聞成了內閣的致命傷)\n舵取[かじと]り／御機嫌取[ごきげんと]り／尻取[しりと]り (掌舵／討好／文字接龍)", 
+                    color: "bg-sky-50", accentColor: "text-sky-600", borderColor: "border-sky-200" 
+                },
+                { 
+                    id: 4, kanji: "受[う]けます", reading: "うけます", meaning: "接受 / 受到", 
+                    example: "学位[がくい]を受[う]ける (獲得學位)\n友人[ゆうじん]から相談[そうだん]を受[う]ける (接受朋友的商量)\n相手[あいて]の槍[やり]を素手[すで]で受[う]ける (空手接下對手的槍)\nショック／影響[えいきょう]／被害[ひがい]を受[う]ける (受到打擊／影響／受害)\nみーちゃんはーちゃんに受[う]けるタレント教授[きょうじゅ] (受大眾歡迎的藝人教授)", 
+                    color: "bg-green-50", accentColor: "text-green-600", borderColor: "border-green-200" 
+                },
+                { 
+                    id: 5, kanji: "申[もう]し込[こ]みます", reading: "もうしこみます", meaning: "申請 / 報名", 
+                    example: "結婚[けっこん]／試合[しあい]／寄付[きふ]／苦情[くじょう]を申[もう]し込[こ]む (求婚／提出比賽／捐款／投訴)", 
+                    color: "bg-yellow-50", accentColor: "text-yellow-600", borderColor: "border-yellow-200" 
+                },
+                { 
+                    id: 6, kanji: "休憩[きゅうけい]します", reading: "きゅうけいします", meaning: "休息", 
+                    example: "休憩[きゅうけい]時間[じかん] (休息時間)\n休憩[きゅうけい]室[しつ] (休息室)\n休憩[きゅうけい]所[じょ] (休息處)", 
+                    color: "bg-rose-50", accentColor: "text-rose-600", borderColor: "border-rose-200" 
+                },
+                
+                // --- 名詞 ---
+                { 
+                    id: 7, kanji: "連休[れんきゅう]", reading: "れんきゅう", meaning: "連假", 
+                    example: "三連休[さんれんきゅう] (三連休)\n飛[と]び石[いし]連休[れんきゅう] (中間夾著上班日的連假)", 
+                    color: "bg-purple-50", accentColor: "text-purple-600", borderColor: "border-purple-200" 
+                },
+                { id: 8, kanji: "作文[さくぶん]", reading: "さくぶん", meaning: "作文", example: "作文[さくぶん]を書[か]く (寫作文)", color: "bg-gray-50", accentColor: "text-gray-600", borderColor: "border-gray-200" },
+                { id: 9, kanji: "発表[はっぴょう]", reading: "はっぴょう", meaning: "發表 / 報告", example: "研究[けんきゅう]を発表[はっぴょう]する (發表研究)", color: "bg-cyan-50", accentColor: "text-cyan-600", borderColor: "border-cyan-200" },
+                { id: 10, kanji: "展覧会[てんらんかい]", reading: "てんらんかい", meaning: "展覽會", example: "展覧会[てんらんかい]に行[い]く (去展覽會)", color: "bg-indigo-50", accentColor: "text-indigo-600", borderColor: "border-indigo-200" },
+                { 
+                    id: 11, kanji: "結婚式[けっこんしき]", reading: "けっこんしき", meaning: "結婚典禮", 
+                    example: "披露宴[ひろうえん] (婚宴)\n仲人[なこうど] (媒人)\n結婚[けっこん]祝[いわ]い (結婚賀禮)", 
+                    color: "bg-red-50", accentColor: "text-red-600", borderColor: "border-red-200" 
+                },
+                { id: 12, kanji: "お葬式[そうしき]", reading: "おそうしき", meaning: "葬禮", example: "お葬式[そうしき]に参列[さんれつ]する (參加葬禮)", color: "bg-stone-50", accentColor: "text-stone-600", borderColor: "border-stone-200" },
+                { 
+                    id: 13, kanji: "式[しき]", reading: "しき", meaning: "典禮 / 儀式", 
+                    example: "式典[しきてん] (典禮)\n卒業式[そつぎょうしき] (畢業典禮)\n入学式[にゅうがくしき] (入學典禮)", 
+                    color: "bg-teal-50", accentColor: "text-teal-600", borderColor: "border-teal-200" 
+                },
+                { 
+                    id: 14, kanji: "本社[ほんしゃ]", reading: "ほんしゃ", meaning: "總公司", 
+                    example: "支店[してん] ➡ 分店[ぶんてん] (例：五十嵐タピオカ飲料店)", 
+                    color: "bg-slate-50", accentColor: "text-slate-600", borderColor: "border-slate-200" 
+                },
+                { id: 15, kanji: "支店[してん]", reading: "してん", meaning: "分公司", example: "支店[してん] (分公司)\n分店[ぶんてん] (分店)", color: "bg-emerald-50", accentColor: "text-emerald-600", borderColor: "border-emerald-200" },
+                { id: 16, kanji: "教会[きょうかい]", reading: "きょうかい", meaning: "教會", example: "教会[きょうかい]へ行[い]く (去教會)", color: "bg-amber-50", accentColor: "text-amber-700", borderColor: "border-amber-200" },
+                { id: 17, kanji: "大学院[だいがくいん]", reading: "だいがくいん", meaning: "研究所", example: "大学院[だいがくいん]に進学[しんがく]する (升學至研究所)", color: "bg-lime-50", accentColor: "text-lime-700", borderColor: "border-lime-200" },
+                { id: 18, kanji: "動物園[どうぶつえん]", reading: "どうぶつえん", meaning: "動物園", example: "動物園[どうぶつえん] (動物園)", color: "bg-fuchsia-50", accentColor: "text-fuchsia-600", borderColor: "border-fuchsia-200" },
+                { id: 19, kanji: "温泉[おんせん]", reading: "おんせん", meaning: "溫泉", example: "温泉[おんせん] (溫泉)", color: "bg-orange-50", accentColor: "text-orange-700", borderColor: "border-orange-200" },
+                { 
+                    id: 20, kanji: "帰[かえ]り", reading: "かえり", meaning: "回程", 
+                    example: "帰[かえ]りが早[はや]い (早回家)\n勤[つと]めの帰[かえ]りに飲[の]み屋[や]に立[た]ち寄[よ]る (下班回家的路上順道去居酒屋)\n行[い]きはタクシーで、帰[かえ]りは電車[でんしゃ]です (去程搭計程車，回程搭電車)\n【注意】返[かえ]り血[ち]を浴[あ]びる (濺得一身血)", 
+                    color: "bg-zinc-50", accentColor: "text-zinc-600", borderColor: "border-zinc-200" 
+                },
+                { 
+                    id: 21, kanji: "お子[こ]さん", reading: "おこさん", meaning: "您孩子 (敬稱)", 
+                    example: "お子[こ]様[さま]セット (兒童餐)", 
+                    color: "bg-pink-50", accentColor: "text-pink-500", borderColor: "border-pink-200" 
+                },
+                { id: 22, kanji: "ー号[ごう]", reading: "ーごう", meaning: "ー號", example: "ー号[ごう] (ー號)", color: "bg-blue-50", accentColor: "text-blue-800", borderColor: "border-blue-200" },
+                { id: 23, kanji: "ーの方[ほう]", reading: "ーのほう", meaning: "ー方面", example: "ーの方[ほう] (ー方面)", color: "bg-violet-50", accentColor: "text-violet-600", borderColor: "border-violet-200" },
+                { id: 24, kanji: "ずっと", reading: "ずっと", meaning: "一直", example: "ずっと (一直)", color: "bg-green-50", accentColor: "text-green-600", borderColor: "border-green-200" },
+                { id: 25, kanji: "バリ", reading: "バリ", meaning: "峇里島", example: "バリ (峇里島)", color: "bg-teal-50", accentColor: "text-teal-600", borderColor: "border-teal-200" },
+                { id: 26, kanji: "ピカソ", reading: "ピカソ", meaning: "畢卡索", example: "ピカソ (畢卡索)", color: "bg-yellow-50", accentColor: "text-yellow-600", borderColor: "border-yellow-200" },
+                { 
+                    id: 27, kanji: "のぞみ", reading: "のぞみ", meaning: "希望號 / 願望", 
+                    example: "望[のぞ]む (希望/期望 - 動詞)", 
+                    color: "bg-blue-50", accentColor: "text-blue-600", borderColor: "border-blue-200" 
+                },
+                { id: 28, kanji: "新神戸[しんこうべ]", reading: "しんこうべ", meaning: "新神戶", example: "新神戸[しんこうべ] (新神戶)", color: "bg-sky-50", accentColor: "text-sky-600", borderColor: "border-sky-200" },
+
+                // --- 截圖補充單字 ---
+                { 
+                    id: 29, kanji: "残[のこ]ります", reading: "のこります", meaning: "留下 / 殘留", 
+                    example: "会社[かいしゃ]に残[のこ]って残業[ざんぎょう]する (留在公司加班)\n決勝戦[けっしょうせん]に勝[か]ち残[のこ]る (晉級決賽)\n生[い]き残[のこ]る (倖存)\n疑問[ぎもん]／悔[く]いが残[のこ]る (留下疑問／後悔)\n学生時代[がくせいじだい]の面影[おもかげ]がちっとも残[のこ]っていない (學生時代的面貌一點都沒留下來)\n江戸時代[えどじだい]の様子[ようす]が色濃[いろこ]く残[のこ]る城下町[じょうかまち] (江戶時代風貌濃厚殘存的城下町)", 
+                    color: "bg-gray-50", accentColor: "text-gray-600", borderColor: "border-gray-200" 
+                },
+                { 
+                    id: 36, kanji: "空[そら]", reading: "そら", meaning: "天空 / 虛假", 
+                    example: "女心[おんなごころ]と秋[あき]の空[そら] (女人心海底針)\n男心[おとこごころ]と五月[ごがつ]の空[そら] (男人心與五月的天空)\n上[うわ]の空[そら] (心不在焉)\n空[そら]を使[つか]う ＝ 仮病[けびょう] (裝病)\n他人[たにん]の空似[そらに] (毫無血緣關係卻長得很像)\n空耳[そらみみ] (聽錯)\n空喜[そらよろこ]び (空歡喜)", 
+                    color: "bg-sky-100", accentColor: "text-sky-700", borderColor: "border-sky-300" 
+                },
+                { 
+                    id: 37, kanji: "閉[と]じます", reading: "とじます", meaning: "閉上 / 關上", 
+                    example: "瞼[まぶた]が一人[ひとり]でに閉[と]じてきた (眼皮自己合上了)\n花[はな]が閉[と]じる (花朵閉合)\n本[ほん]／目[め]／口[くち]を閉[と]じる (闔上書／閉眼／閉嘴)\n関連語：去[さ]る／帰[かえ]る／終[お]わる (關聯詞：離開／回去／結束)", 
+                    color: "bg-slate-50", accentColor: "text-slate-600", borderColor: "border-slate-200" 
+                },
+                { 
+                    id: 40, kanji: "自由[じゆう]に", reading: "じゆうに", meaning: "自由地", 
+                    example: "ご自由[じゆう]に (請自便)\n自由[じゆう]気[き]ままに暮[く]らす (自由自在地生活)\n自由席[じゆうせき]／指定席[していせき] (自由座／對號座)\n自由[じゆう]と放恣[ほうし]とを履[は]き違[ちが]える (把自由和放縱搞混了)\n言論[げんろん]の自由[じゆう]が保障[ほしょう]される (言論自由受到保障)\nヘイター／アンチ (Hater/Anti)\n政府[せいふ]の態度[たいど] (政府的態度)\n先進国[せんしんこく] (先進國家)", 
+                    color: "bg-cyan-50", accentColor: "text-cyan-600", borderColor: "border-cyan-200" 
+                },
+                { 
+                    id: 41, kanji: "忌[い]み言葉[ことば]", reading: "いみことば", meaning: "禁忌語", 
+                    example: "本日[ほんじつ]はこれでお開[ひら]きにしたいと思[おも]います (今天就到此結束/散會 - 避開「終わる」的說法)", 
+                    color: "bg-rose-50", accentColor: "text-rose-700", borderColor: "border-rose-200" 
+                }
+            ];
+
+            const currentWord = vocabularyList[currentIndex];
+            const getImageUrl = (id) => `images/vocab_${id}.jpg`;
+
+            const handleNext = useCallback(() => { setIsFlipped(false); setCurrentIndex((prev) => (prev + 1) % vocabularyList.length); }, [vocabularyList.length]);
+            const handlePrev = useCallback(() => { setIsFlipped(false); setCurrentIndex((prev) => (prev - 1 + vocabularyList.length) % vocabularyList.length); }, [vocabularyList.length]);
+            const handleFlip = () => setIsFlipped(!isFlipped);
+
+            return (
+                <div className="flex flex-col items-center justify-center min-h-screen bg-slate-100 p-4 font-sans text-gray-800">
+                    <div className="mb-6 text-center">
+                        <h1 className="text-3xl font-bold text-gray-800 mb-1">大家的日本語 第31課</h1>
+                        <p className="text-gray-500 text-sm">互動式單字記憶卡 (筆記完整版)</p>
+                    </div>
+
+                    <div className="relative w-full max-w-md h-[640px] perspective-1000">
+                        <div className="absolute -top-6 left-0 w-full h-1 bg-gray-200 rounded-full overflow-hidden">
+                            <div className="h-full bg-blue-500 transition-all duration-300" style={{ width: `${((currentIndex + 1) / vocabularyList.length) * 100}%` }} />
+                        </div>
+                        <div className="absolute -top-8 right-0 text-xs font-bold text-gray-400">{currentIndex + 1} / {vocabularyList.length}</div>
+
+                        <div className={`relative w-full h-full transition-transform duration-500 transform-style-3d cursor-pointer ${isFlipped ? 'rotate-y-180' : ''}`} onClick={handleFlip}>
+                            <div className={`absolute w-full h-full backface-hidden rounded-2xl shadow-xl overflow-hidden border ${currentWord.borderColor} flex flex-col ${currentWord.color} bg-white`}>
+                                <div className="h-[40%] w-full bg-gray-200 relative overflow-hidden group">
+                                    <img src={getImageUrl(currentWord.id)} alt={currentWord.kanji} className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/600x400/e2e8f0/94a3b8?text=No+Image"; }} />
+                                    <div className="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity z-20"><Lightbulb size={12} /> 點擊翻轉</div>
+                                </div>
+                                <div className="flex-1 flex flex-col items-center justify-center p-6 bg-white relative">
+                                    <div className={`absolute top-0 left-0 w-full h-1 ${currentWord.color.replace('bg-', 'bg-opacity-50 bg-')}`}></div>
+                                    <p className="text-xl text-gray-400 mb-3 font-medium tracking-wide">{currentWord.reading}</p>
+                                    <div className={`text-5xl font-black mb-8 text-center ${currentWord.accentColor}`}><FuriganaText text={currentWord.kanji} /></div>
+                                    <button onClick={(e) => { e.stopPropagation(); speak(currentWord.kanji); }} className={`p-4 rounded-full ${currentWord.color} ${currentWord.accentColor} hover:brightness-95 transition-all active:scale-95 shadow-sm`} title="播放發音"><Volume2 size={28} /></button>
+                                </div>
+                                <div className="p-3 bg-gray-50 text-center text-gray-400 text-xs border-t border-gray-100">點擊卡片查看意思與例句</div>
+                            </div>
+
+                            <div className="absolute w-full h-full backface-hidden rotate-y-180 rounded-2xl shadow-xl overflow-hidden border border-gray-200 flex flex-col bg-white">
+                                <div className={`h-2 w-full ${currentWord.color.replace('bg-', 'bg-')}`}></div>
+                                <div className="flex-1 flex flex-col p-6 h-full">
+                                    <div className="text-center mb-4 pb-4 border-b border-gray-100">
+                                        <h3 className={`text-2xl font-bold mb-1 ${currentWord.accentColor} flex items-center justify-center gap-2`}>
+                                            <FuriganaText text={currentWord.kanji} />
+                                            <button onClick={(e) => { e.stopPropagation(); speak(currentWord.kanji); }} className={`p-1.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-colors`} title="播放單字發音"><Volume2 size={18} /></button>
+                                        </h3>
+                                        <p className="text-lg text-gray-800 font-bold mt-2">{currentWord.meaning}</p>
+                                    </div>
+                                    <div className="flex-1 overflow-y-auto no-scrollbar pr-1">
+                                        <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                            <div className="flex items-center gap-2 mb-3 text-gray-500 font-bold text-xs uppercase tracking-wider sticky top-0 bg-gray-50 py-1"><BookOpen size={14} /><span>例句與補充</span></div>
+                                            <div className="text-gray-700 text-base leading-relaxed space-y-3">
+                                                <FuriganaText text={currentWord.example} showSpeaker={true} speakerColor={currentWord.accentColor} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-6 mt-8">
+                        <button onClick={handlePrev} className="p-4 rounded-full bg-white shadow-md text-gray-600 hover:text-blue-600 hover:shadow-lg transition-all active:scale-95 border border-gray-100" aria-label="上一個"><ChevronLeft size={24} /></button>
+                        <button onClick={() => { setIsFlipped(false); setCurrentIndex(0); }} className="flex items-center gap-2 px-6 py-3 rounded-full bg-white shadow-md text-gray-600 font-medium hover:text-blue-600 hover:shadow-lg transition-all active:scale-95 border border-gray-100"><RotateCcw size={18} /><span className="text-sm">重新開始</span></button>
+                        <button onClick={handleNext} className="p-4 rounded-full bg-white shadow-md text-gray-600 hover:text-blue-600 hover:shadow-lg transition-all active:scale-95 border border-gray-100" aria-label="下一個"><ChevronRight size={24} /></button>
+                    </div>
+                </div>
+            );
+        };
+        const root = createRoot(document.getElementById('root'));
+        root.render(<VocabularySlides />);
+    </script>
+</body>
+</html>
