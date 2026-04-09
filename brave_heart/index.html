@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日文學習 - 【歌詞付】brave heart ⧸ 宮崎歩【デジモンアドベンチャー挿入歌】</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #0a0a14;
+  color: #e8e8e8;
+  font-family: 'Hiragino Sans', 'Yu Gothic', 'Noto Sans JP', sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+/* === Top Bar === */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 14px;
+  background: #12121f;
+  border-bottom: 1px solid #2a2a45;
+  flex-shrink: 0;
+}
+.topbar-title { font-size: 13px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 500px; }
+.topbar-btns { display: flex; gap: 8px; flex-shrink: 0; }
+.btn {
+  padding: 5px 12px;
+  border: 1px solid #3a3a60;
+  background: #1e1e35;
+  color: #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.btn:hover { background: #2a2a4a; border-color: #5a5aaa; color: #fff; }
+.btn.active { background: #2d4a8a; border-color: #4a7aff; color: #7ab8ff; }
+.btn.accent { background: #1e3a2a; border-color: #3a8a5a; color: #6adf9a; }
+.btn.accent:hover { background: #2a4a3a; }
+/* === Main Area === */
+.main { flex: 1; display: flex; overflow: hidden; position: relative; }
+/* === Video Section === */
+.video-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.video-container {
+  position: relative;
+  flex: 1;
+  background: #000;
+  overflow: hidden;
+}
+#video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+/* === Subtitles === */
+.subtitle-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 20px 16px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.85));
+  text-align: center;
+  pointer-events: none;
+}
+.subtitle-overlay.has-content { pointer-events: auto; }
+#jp-subtitle {
+  font-size: 22px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 1px 4px #000, 0 0 8px rgba(0,0,0,.8);
+  line-height: 1.5;
+  cursor: default;
+  margin-bottom: 4px;
+  min-height: 1.5em;
+}
+#zh-subtitle {
+  font-size: 15px;
+  color: #ddd;
+  text-shadow: 0 1px 3px #000;
+  min-height: 1.2em;
+}
+.word {
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 0 1px;
+  transition: color .1s, background .1s;
+}
+.word:hover { color: #6adfaf; background: rgba(106,223,175,.12); }
+.word.active-word { color: #6adfaf; }
+/* === Repeat hint === */
+.repeat-hint {
+  text-align: center;
+  padding: 6px;
+  background: #1a2a3a;
+  color: #6adfaf;
+  font-size: 13px;
+  border-top: 1px solid #2a4a6a;
+  flex-shrink: 0;
+}
+/* === Controls === */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: #12121f;
+  border-top: 1px solid #2a2a45;
+  flex-shrink: 0;
+}
+#play-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  width: 32px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+#play-btn:hover { color: #6adfaf; }
+.progress-wrap {
+  flex: 1;
+  height: 6px;
+  background: #2a2a45;
+  border-radius: 3px;
+  cursor: pointer;
+  position: relative;
+}
+#progress-fill {
+  height: 100%;
+  background: #4a7aff;
+  border-radius: 3px;
+  pointer-events: none;
+  width: 0%;
+}
+#time-display { font-size: 12px; color: #888; white-space: nowrap; flex-shrink: 0; }
+#speed-select {
+  background: #1e1e35;
+  border: 1px solid #3a3a60;
+  color: #ccc;
+  padding: 3px 6px;
+  border-radius: 5px;
+  font-size: 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+/* === Word Popup === */
+#word-popup {
+  position: fixed;
+  z-index: 200;
+  background: #1e1e35;
+  border: 1px solid #4a4a80;
+  border-radius: 10px;
+  padding: 12px 14px;
+  min-width: 180px;
+  max-width: 280px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.6);
+  display: none;
+}
+.popup-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.popup-word { font-size: 22px; font-weight: bold; color: #fff; }
+.popup-reading { font-size: 14px; color: #6adfaf; }
+.popup-pos { font-size: 11px; color: #888; margin-bottom: 4px; }
+.popup-meaning { font-size: 15px; color: #ddd; margin-bottom: 10px; }
+.popup-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 18px;
+  cursor: pointer;
+  line-height: 1;
+}
+.popup-close:hover { color: #aaa; }
+.popup-save {
+  width: 100%;
+  padding: 6px;
+  background: #1e3a2a;
+  border: 1px solid #3a8a5a;
+  color: #6adf9a;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.popup-save:hover { background: #2a4a3a; }
+.popup-saved { color: #aaa; border-color: #444; background: #1a1a2e; cursor: default; }
+/* === Side Panel === */
+.side-panel {
+  width: 340px;
+  background: #12121f;
+  border-left: 1px solid #2a2a45;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid #2a2a45;
+  flex-shrink: 0;
+}
+.panel-header h3 { font-size: 14px; color: #aaa; }
+.panel-close {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+}
+.panel-close:hover { color: #aaa; }
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+}
+.panel-content::-webkit-scrollbar { width: 4px; }
+.panel-content::-webkit-scrollbar-track { background: transparent; }
+.panel-content::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+/* Grammar Panel */
+.grammar-sentence {
+  font-size: 16px;
+  color: #ddd;
+  line-height: 1.6;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #2a2a3a;
+}
+.grammar-text {
+  font-size: 14px;
+  color: #bbb;
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+.grammar-words { margin-top: 6px; }
+.grammar-words h4 { font-size: 12px; color: #666; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+.word-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid #1e1e2e;
+  cursor: pointer;
+}
+.word-row:hover { background: #1a1a2e; border-radius: 4px; padding-left: 4px; }
+.wr-text { font-size: 15px; color: #fff; font-weight: 500; min-width: 60px; }
+.wr-reading { font-size: 12px; color: #6adfaf; min-width: 70px; }
+.wr-pos { font-size: 11px; color: #666; min-width: 45px; }
+.wr-meaning { font-size: 13px; color: #ccc; }
+.wr-add { margin-left: auto; font-size: 18px; color: #444; cursor: pointer; flex-shrink: 0; }
+.wr-add:hover { color: #6adf9a; }
+/* Vocab Panel */
+.vocab-empty { color: #555; font-size: 14px; text-align: center; margin-top: 40px; }
+.vocab-item {
+  padding: 10px;
+  border: 1px solid #2a2a3a;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: #1a1a2e;
+}
+.vocab-item-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.vocab-word { font-size: 18px; font-weight: bold; color: #fff; }
+.vocab-reading { font-size: 13px; color: #6adfaf; }
+.vocab-pos { font-size: 11px; color: #666; }
+.vocab-meaning { font-size: 14px; color: #ddd; margin-top: 4px; }
+.vocab-sentence { font-size: 12px; color: #666; margin-top: 4px; font-style: italic; }
+.vocab-del { background: none; border: none; color: #444; cursor: pointer; font-size: 16px; }
+.vocab-del:hover { color: #e94560; }
+.copy-btn {
+  width: 100%;
+  padding: 6px;
+  background: #1e2a3a;
+  border: 1px solid #3a5a7a;
+  color: #7ab8ff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.copy-btn:hover { background: #2a3a4a; }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-title" title="【歌詞付】brave heart ⧸ 宮崎歩【デジモンアドベンチャー挿入歌】">【歌詞付】brave heart ⧸ 宮崎歩【デジモンアドベンチャー挿入歌】</div>
+  <div class="topbar-btns">
+    <button class="btn" id="repeat-btn" onclick="toggleRepeat()">跟讀模式</button>
+    <button class="btn" id="grammar-btn" onclick="toggleGrammar()">文法解析</button>
+    <button class="btn" id="vocab-btn" onclick="toggleVocab()">生詞本 (<span id="vocab-count">0</span>)</button>
+  </div>
+</div>
+<div class="main">
+  <div class="video-section">
+    <div class="video-container">
+      <div id="yt-player"></div>
+      <div class="subtitle-overlay" id="subtitle-overlay">
+        <div id="jp-subtitle"></div>
+        <div id="zh-subtitle"></div>
+      </div>
+    </div>
+    <div id="repeat-hint" class="repeat-hint" style="display:none">
+      跟讀模式：<b>空白鍵</b> 重播本句　<b>→ / Enter</b> 繼續
+    </div>
+    <div class="controls">
+      <button id="play-btn" onclick="togglePlay()">▶</button>
+      <div class="progress-wrap" id="progress-wrap">
+        <div id="progress-fill"></div>
+      </div>
+      <span id="time-display">0:00 / 0:00</span>
+      <select id="speed-select" onchange="setPlaybackRate(+this.value)">
+        <option value="0.5">0.5x</option>
+        <option value="0.75">0.75x</option>
+        <option value="1" selected>1.0x</option>
+        <option value="1.25">1.25x</option>
+        <option value="1.5">1.5x</option>
+      </select>
+    </div>
+  </div>
+  <div class="side-panel" id="grammar-panel" style="display:none">
+    <div class="panel-header">
+      <h3>文法解析</h3>
+      <button class="panel-close" onclick="toggleGrammar()">×</button>
+    </div>
+    <div class="panel-content" id="grammar-content">
+      <div style="color:#555;font-size:14px;text-align:center;margin-top:40px">點擊字幕顯示文法解析</div>
+    </div>
+  </div>
+  <div class="side-panel" id="vocab-panel" style="display:none">
+    <div class="panel-header">
+      <h3>生詞本</h3>
+      <button class="panel-close" onclick="toggleVocab()">×</button>
+    </div>
+    <div class="panel-content" id="vocab-content"></div>
+  </div>
+</div>
+<div id="word-popup">
+  <button class="popup-close" onclick="hidePopup()">×</button>
+  <div class="popup-header">
+    <span class="popup-word" id="pu-word"></span>
+    <span class="popup-reading" id="pu-reading"></span>
+  </div>
+  <div class="popup-pos" id="pu-pos"></div>
+  <div class="popup-meaning" id="pu-meaning"></div>
+  <button class="popup-save" id="pu-save">加入生詞本</button>
+</div>
+
+<script>
+const SUBTITLES = [{"id": 1, "start": 0.75, "end": 4.04, "japanese": "[音楽]", "chinese": "[音樂]", "words": [{"text": "音楽", "reading": "おんがく", "pos": "名詞", "meaning": "音樂"}], "grammar": "方括號表示情境音效，名詞獨立使用。"}, {"id": 2, "start": 1.0, "end": 7.32, "japanese": "[拍手]", "chinese": "[掌聲]", "words": [{"text": "拍手", "reading": "はくしゅ", "pos": "名詞", "meaning": "拍手"}], "grammar": "方括號表示情境音效，名詞獨立使用。"}, {"id": 3, "start": 4.04, "end": 7.32, "japanese": "[音楽]", "chinese": "[音樂]", "words": [{"text": "音楽", "reading": "おんがく", "pos": "名詞", "meaning": "音樂"}], "grammar": "方括號表示情境音效，名詞獨立使用。"}, {"id": 4, "start": 8.558, "end": 11.558, "japanese": "あ", "chinese": "啊", "words": [{"text": "あ", "reading": "あ", "pos": "感嘆詞", "meaning": "啊"}], "grammar": "感嘆詞，表達驚訝或呼喚。"}, {"id": 5, "start": 12.089, "end": 17.39, "japanese": "[音楽]", "chinese": "[音樂]", "words": [{"text": "音楽", "reading": "おんがく", "pos": "名詞", "meaning": "音樂"}], "grammar": "方括號表示情境音效，名詞獨立使用。"}, {"id": 6, "start": 32.598, "end": 44.32, "japanese": "逃げたり諦めることは誰", "chinese": "逃避與放棄，誰人", "words": [{"text": "逃げ", "reading": "にげ", "pos": "動詞", "meaning": "逃跑（動詞「逃げる」連用形）"}, {"text": "たり", "reading": "たり", "pos": "助詞", "meaning": "表示列舉動作（…啦…啦）"}, {"text": "諦める", "reading": "あきらめる", "pos": "動詞", "meaning": "放棄（動詞基本形）"}, {"text": "こと", "reading": "こと", "pos": "名詞", "meaning": "事情、行為"}, {"text": "は", "reading": "は", "pos": "助詞", "meaning": "提示主題"}, {"text": "誰", "reading": "だれ", "pos": "名詞", "meaning": "誰"}], "grammar": "「動詞連用形+たり」表示列舉動作。「動詞基本形+こと」將動詞名詞化。"}, {"id": 7, "start": 38.479, "end": 51.439, "japanese": "も一瞬あればできるから歩き", "chinese": "皆能一瞬為之，故而，持續前行吧", "words": [{"text": "も", "reading": "も", "pos": "助詞", "meaning": "也"}, {"text": "一瞬", "reading": "いっしゅん", "pos": "名詞", "meaning": "一瞬間"}, {"text": "あれ", "reading": "あれ", "pos": "動詞", "meaning": "有（動詞「ある」假定形）"}, {"text": "ば", "reading": "ば", "pos": "助詞", "meaning": "如果（表示假定條件）"}, {"text": "できる", "reading": "できる", "pos": "動詞", "meaning": "能、可以"}, {"text": "から", "reading": "から", "pos": "助詞", "meaning": "因為（表示原因）"}, {"text": "歩き", "reading": "あるき", "pos": "動詞", "meaning": "走（動詞「歩く」連用形）"}], "grammar": "「〜ば」表示假定條件。「〜から」表示原因。「動詞連用形」連接下一句。"}, {"id": 8, "start": 44.32, "end": 55.719, "japanese": "続けよう国にしかできないことがある青い", "chinese": "持續前行吧，有事唯你方能，讓這青色", "words": [{"text": "続けよう", "reading": "つづけよう", "pos": "動詞", "meaning": "繼續吧（動詞「続ける」意志形）"}, {"text": "国", "reading": "くに", "pos": "名詞", "meaning": "國家"}, {"text": "に", "reading": "に", "pos": "助詞", "meaning": "對於"}, {"text": "しか", "reading": "しか", "pos": "助詞", "meaning": "只有（後接否定）"}, {"text": "でき", "reading": "でき", "pos": "動詞", "meaning": "能做到（動詞「できる」連用形）"}, {"text": "ない", "reading": "ない", "pos": "助動詞", "meaning": "不（否定）"}, {"text": "こと", "reading": "こと", "pos": "名詞", "meaning": "事情"}, {"text": "が", "reading": "が", "pos": "助詞", "meaning": "表示主語"}, {"text": "ある", "reading": "ある", "pos": "動詞", "meaning": "有"}, {"text": "青い", "reading": "あおい", "pos": "形容詞", "meaning": "藍色的"}], "grammar": "「意志形」表勸誘。「〜にしか〜ない」表「只有〜才能〜」。「〜ことがある」表「有〜事情」。"}, {"id": 9, "start": 51.439, "end": 60.439, "japanese": "星に光が", "chinese": "星辰之上，光芒", "words": [{"text": "星", "reading": "ほし", "pos": "名詞", "meaning": "星星"}, {"text": "に", "reading": "に", "pos": "助詞", "meaning": "對於、向（表示對象）"}, {"text": "光", "reading": "ひかり", "pos": "名詞", "meaning": "光"}, {"text": "が", "reading": "が", "pos": "助詞", "meaning": "表示主語"}], "grammar": "「名詞Aに名詞Bが」表示B作用於A，語境為「給星星光芒」。"}, {"id": 10, "start": 55.719, "end": 60.439, "japanese": "なせるように", "chinese": "得以輝映", "words": [{"text": "なせる", "reading": "なせる", "pos": "動詞", "meaning": "能做到、能達成（動詞「なす」可能形）"}, {"text": "ように", "reading": "ように", "pos": "助詞", "meaning": "為了（表示目的或狀態）"}], "grammar": "「可能形+ように」表示為了達到某種目的或狀態。"}, {"id": 11, "start": 60.679, "end": 73.2, "japanese": "め描いた夢を守れ大事な友をたましい自分", "chinese": "守護你描繪的夢想，珍貴的友誼，使自己能成為", "words": [{"text": "め", "reading": "め", "pos": "間投詞", "meaning": "喂/哎呀 (或引導語氣)"}, {"text": "描いた", "reading": "えがいた", "pos": "動詞", "meaning": "描繪了"}, {"text": "夢", "reading": "ゆめ", "pos": "名詞", "meaning": "夢想"}, {"text": "を", "reading": "を", "pos": "助詞", "meaning": "賓格助詞"}, {"text": "守れ", "reading": "まもれ", "pos": "動詞", "meaning": "守護"}, {"text": "大事な", "reading": "だいじな", "pos": "形容動詞", "meaning": "重要的"}, {"text": "友", "reading": "とも", "pos": "名詞", "meaning": "朋友"}, {"text": "を", "reading": "を", "pos": "助詞", "meaning": "賓格助詞"}, {"text": "たましい", "reading": "たましい", "pos": "名詞", "meaning": "靈魂"}, {"text": "自分", "reading": "じぶん", "pos": "名詞", "meaning": "自己"}], "grammar": "「描いた夢」為動詞連體形修飾名詞。「を」是賓格助詞。「守れ」為動詞命令形。「大事な」形容動詞修飾名詞。「たましい自分」指「靈魂深處的自己」。"}, {"id": 12, "start": 70.92, "end": 81.04, "japanese": "になれる", "chinese": "真我靈魂", "words": [{"text": "に", "reading": "に", "pos": "助詞", "meaning": "成為"}, {"text": "なれる", "reading": "なれる", "pos": "動詞", "meaning": "能夠成為"}], "grammar": "「～になれる」表示「能夠成為～」，是動詞「なる」的可能形表達。"}, {"id": 13, "start": 73.2, "end": 88.45, "japanese": "さ知らないパワが宿る波に日がついたら", "chinese": "瞧，那未知力量一旦寄宿，若浪潮被點燃", "words": [{"text": "さ", "reading": "さ", "pos": "間投詞", "meaning": "喂/哎呀 (或引導語氣)"}, {"text": "知らない", "reading": "しらない", "pos": "動詞", "meaning": "不知道的/不了解的"}, {"text": "パワ", "reading": "ぱわ", "pos": "名詞", "meaning": "力量"}, {"text": "が", "reading": "が", "pos": "助詞", "meaning": "主格助詞"}, {"text": "宿る", "reading": "やどる", "pos": "動詞", "meaning": "寄宿/棲息"}, {"text": "波", "reading": "なみ", "pos": "名詞", "meaning": "波浪"}, {"text": "に", "reading": "に", "pos": "助詞", "meaning": "在...上"}, {"text": "日", "reading": "ひ", "pos": "名詞", "meaning": "火/光"}, {"text": "が", "reading": "が", "pos": "助詞", "meaning": "主格助詞"}, {"text": "ついたら", "reading": "ついたら", "pos": "動詞", "meaning": "如果點燃/附著"}], "grammar": "「知らないパワ」動詞連體形修飾名詞。「～に火がつく」慣用句。「～たら」表條件。"}, {"id": 14, "start": 81.04, "end": 95.939, "japanese": "どんな願いも嘘じゃないきっと叶うから味", "chinese": "任何願望皆非虛言，因其必將實現", "words": [{"text": "どんな", "reading": "どんな", "pos": "連体詞", "meaning": "什麼樣的"}, {"text": "願い", "reading": "ねがい", "pos": "名詞", "meaning": "願望"}, {"text": "も", "reading": "も", "pos": "助詞", "meaning": "也/都"}, {"text": "嘘じゃない", "reading": "うそじゃない", "pos": "形容詞", "meaning": "不是謊言"}, {"text": "きっと", "reading": "きっと", "pos": "副詞", "meaning": "一定/必定"}, {"text": "叶う", "reading": "かなう", "pos": "動詞", "meaning": "實現"}, {"text": "から", "reading": "から", "pos": "助詞", "meaning": "因為/所以"}, {"text": "味", "reading": "あじ", "pos": "名詞", "meaning": "味道/滋味"}], "grammar": "「どんな～も」表「無論～都～」。「～じゃない」為否定。「きっと」副詞強調。「～から」表原因。"}, {"id": 15, "start": 88.45, "end": 95.939, "japanese": "[音楽]", "chinese": "[音樂]", "words": [{"text": "[音楽]", "reading": "おんがく", "pos": "名詞", "meaning": "音樂"}], "grammar": "此處非口語內容，表示為音樂部分。"}, {"id": 16, "start": 107.62, "end": 116.118, "japanese": "[音楽]", "chinese": "[音樂]", "words": [{"text": "[音楽]", "reading": "おんがく", "pos": "名詞", "meaning": "音樂"}], "grammar": "此處非口語內容，表示為音樂部分。"}, {"id": 17, "start": 110.359, "end": 121.519, "japanese": "晴れの日ばかりじゃないから頭", "chinese": "並非總是晴朗之日，有時頭頂", "words": [{"text": "晴れ", "reading": "はれ", "pos": "名詞", "meaning": "晴朗"}, {"text": "の", "reading": "の", "pos": "助詞", "meaning": "的"}, {"text": "日", "reading": "ひ", "pos": "名詞", "meaning": "日子"}, {"text": "ばかり", "reading": "ばかり", "pos": "副助詞", "meaning": "只/僅"}, {"text": "じゃない", "reading": "じゃない", "pos": "助動詞", "meaning": "不是"}, {"text": "から", "reading": "から", "pos": "助詞", "meaning": "因為/所以"}, {"text": "頭", "reading": "あたま", "pos": "名詞", "meaning": "頭"}], "grammar": "「～ばかりじゃない」表示「不只是～」的否定。 「から」表原因。 「頭」可能是句子的承接或省略。"}, {"id": 18, "start": 116.118, "end": 130.12, "japanese": "に冷たい雨も来るけ", "chinese": "亦會降下冰冷雨水", "words": [{"text": "に", "reading": "に", "pos": "助詞", "meaning": "往.../到..."}, {"text": "冷たい", "reading": "つめたい", "pos": "形容詞", "meaning": "冰冷的"}, {"text": "雨", "reading": "あめ", "pos": "名詞", "meaning": "雨"}, {"text": "も", "reading": "も", "pos": "助詞", "meaning": "也/都"}, {"text": "来る", "reading": "くる", "pos": "動詞", "meaning": "來"}, {"text": "け", "reading": "け", "pos": "接續助詞", "meaning": "但是/雖然 (けれども縮略)"}], "grammar": "「冷たい雨」形容詞修飾名詞。「も」表包含。「け」是「けれども」縮略，表轉折。"}, {"id": 19, "start": 121.519, "end": 133.519, "japanese": "広げよう生き方に実なんかないてるだから", "chinese": "敞開心扉吧，人生之路並無定則，因此", "words": [{"text": "広げよう", "reading": "ひろげよう", "pos": "動詞", "meaning": "讓我們張開/伸展"}, {"text": "生き方", "reading": "いきかた", "pos": "名詞", "meaning": "生活方式"}, {"text": "に", "reading": "に", "pos": "助詞", "meaning": "在...方面"}, {"text": "実", "reading": "み", "pos": "名詞", "meaning": "真實/實質"}, {"text": "なんか", "reading": "なんか", "pos": "副助詞", "meaning": "什麼的/之類的"}, {"text": "ないてる", "reading": "ないてる", "pos": "動詞", "meaning": "正在哭泣"}, {"text": "だから", "reading": "だから", "pos": "接続詞", "meaning": "所以/因此"}], "grammar": "「～よう」動詞意志形。「生き方に」表範圍。「なんか」輕視語氣。「ないてる」為「泣いている」縮略，表「正在哭泣」。「だから」表因果。"}, {"id": 20, "start": 130.12, "end": 137.239, "japanese": "自由どこへだって", "chinese": "自由自在，縱橫四方", "words": [{"text": "自由", "reading": "じゆう", "pos": "名詞", "meaning": "自由"}, {"text": "どこへ", "reading": "どこへ", "pos": "副詞", "meaning": "往哪裡"}, {"text": "だって", "reading": "だって", "pos": "副助詞", "meaning": "也/即使 (表示不論何處)"}], "grammar": "「どこへだって」表示「無論到哪裡都可以」，強調場所的廣泛性。"}, {"id": 21, "start": 133.519, "end": 137.239, "japanese": "ゆける君", "chinese": "你終將啟程。", "words": [{"text": "ゆける", "reading": "ゆける", "pos": "動詞", "meaning": "能夠前往/可以去（「行く」的可能形「行ける」的連體形）"}, {"text": "君", "reading": "きみ", "pos": "名詞", "meaning": "你"}], "grammar": "「ゆける」是動詞「行く」的可能形「行ける」的連體形，修飾名詞「君」，表示「能去、可以去」的意思。"}, {"id": 22, "start": 138.28, "end": 147.4, "japanese": "も勝で勝より早く目指せ空より", "chinese": "比獲勝更迅速，將目標投向天際", "words": [{"text": "も", "reading": "も", "pos": "助詞", "meaning": "也/甚至"}, {"text": "勝", "reading": "かつ", "pos": "名詞/動詞連用形", "meaning": "勝利/贏（此處語法較不自然）"}, {"text": "で", "reading": "で", "pos": "助詞", "meaning": "以/在/藉由"}, {"text": "勝", "reading": "かつ", "pos": "名詞/動詞連用形", "meaning": "勝利/贏（此處語法較不自然）"}, {"text": "より", "reading": "より", "pos": "助詞", "meaning": "比...（比較）"}, {"text": "早く", "reading": "はやく", "pos": "副詞", "meaning": "快速地"}, {"text": "目指せ", "reading": "めざせ", "pos": "動詞", "meaning": "瞄準/以...為目標（「目指す」的命令形）"}, {"text": "空", "reading": "そら", "pos": "名詞", "meaning": "天空"}, {"text": "より", "reading": "より", "pos": "助詞", "meaning": "比...（比較）"}], "grammar": "此句語法結構較為特殊，尤其是「勝で勝より」。「早く」是副詞修飾動詞「目指せ」（命令形）。「空より」的「より」表示比較，意為「比天空更...」。"}, {"id": 23, "start": 145.878, "end": 150.56, "japanese": "遠く", "chinese": "更遙遠之境。", "words": [{"text": "遠く", "reading": "とおく", "pos": "副詞", "meaning": "遙遠地"}], "grammar": "形容詞「遠い」的連用形，作副詞使用，表示「遙遠地」或「到遠方」。"}, {"id": 24, "start": 147.4, "end": 151.8, "japanese": "新しい自分に", "chinese": "向嶄新的自己", "words": [{"text": "新しい", "reading": "あたらしい", "pos": "形容詞", "meaning": "新的"}, {"text": "自分", "reading": "じぶん", "pos": "名詞", "meaning": "自己"}, {"text": "に", "reading": "に", "pos": "助詞", "meaning": "對/往/成為"}], "grammar": "「新しい」是形容詞修飾名詞「自分」。「に」助詞表示對象或變化的結果，意為「對新的自己」。"}, {"id": 25, "start": 150.56, "end": 156.039, "japanese": "会える", "chinese": "你將能相遇。", "words": [{"text": "会える", "reading": "あえる", "pos": "動詞", "meaning": "能夠見面/可以遇到（「会う」的可能形）"}], "grammar": "動詞「会う（あう）」的可能形「会える」，表示「能見面/可以見到」。"}, {"id": 26, "start": 151.8, "end": 163.199, "japanese": "さ知らない勇気が", "chinese": "那份深藏未知的勇氣", "words": [{"text": "さ", "reading": "さ", "pos": "助詞/感嘆詞", "meaning": "啊/呀（語氣詞）"}, {"text": "知らない", "reading": "しらない", "pos": "動詞", "meaning": "不知道的（「知る」的否定連體形）"}, {"text": "勇気", "reading": "ゆうき", "pos": "名詞", "meaning": "勇氣"}, {"text": "が", "reading": "が", "pos": "助詞", "meaning": "（主格助詞）"}], "grammar": "「さ」作為語氣詞。「知らない」是動詞「知る」的否定連體形，修飾名詞「勇気」。「が」助詞標記主語。"}, {"id": 27, "start": 156.039, "end": 167.479, "japanese": "眠るに気がついたら胸の中のどしゃぶりも", "chinese": "一旦察覺那沉睡的勇氣，就連心底的傾盆大雨也", "words": [{"text": "眠る", "reading": "ねむる", "pos": "動詞", "meaning": "睡覺/沉睡"}, {"text": "に", "reading": "に", "pos": "助詞", "meaning": "在...中（表示狀態或時間）"}, {"text": "気がついたら", "reading": "きがついたら", "pos": "動詞", "meaning": "如果發現/當察覺時（「気がつく」的假定形「たら」）"}, {"text": "胸", "reading": "むね", "pos": "名詞", "meaning": "胸口"}, {"text": "の", "reading": "の", "pos": "助詞", "meaning": "的（所有格/修飾）"}, {"text": "どしゃぶり", "reading": "どしゃぶり", "pos": "名詞", "meaning": "傾盆大雨"}, {"text": "も", "reading": "も", "pos": "助詞", "meaning": "也/甚至"}], "grammar": "「眠るに」是特殊用法，意指「在沉睡中」。 「気がついたら」是動詞「気がつく」的「たら」假定形，表示「如果察覺/當察覺時」。 「も」表示強調或包含。"}, {"id": 28, "start": 163.199, "end": 167.479, "japanese": "きっとやむから", "chinese": "終將止息。", "words": [{"text": "きっと", "reading": "きっと", "pos": "副詞", "meaning": "一定/必定"}, {"text": "やむ", "reading": "やむ", "pos": "動詞", "meaning": "停止/停息（雨、風等）"}, {"text": "から", "reading": "から", "pos": "助詞", "meaning": "因為/所以"}], "grammar": "「きっと」是副詞，表示確信。「やむ」是動詞「止む」，指雨、風等停止。「から」助詞表示理由或原因。"}, {"id": 29, "start": 170.009, "end": 173.34, "japanese": "[音楽]", "chinese": "[音樂]", "words": [{"text": "[", "reading": "[", "pos": "符號", "meaning": "左方括號"}, {"text": "音楽", "reading": "おんがく", "pos": "名詞", "meaning": "音樂"}, {"text": "]", "reading": "]", "pos": "符號", "meaning": "右方括號"}], "grammar": "此為非語言訊息，表示字幕中出現音樂聲。"}, {"id": 30, "start": 176.599, "end": 197.799, "japanese": "[音楽]", "chinese": "[音樂]", "words": [{"text": "[", "reading": "[", "pos": "符號", "meaning": "左方括號"}, {"text": "音楽", "reading": "おんがく", "pos": "名詞", "meaning": "音樂"}, {"text": "]", "reading": "]", "pos": "符號", "meaning": "右方括號"}], "grammar": "此為非語言訊息，表示字幕中出現音樂聲。"}, {"id": 31, "start": 186.479, "end": 199.158, "japanese": "め眩しアを守れ愛する人をたましい自分に", "chinese": "守護耀眼光芒，守護摯愛之人，你將能成為內心豐盈的自己。", "words": [{"text": "め", "reading": "め", "pos": "感嘆詞", "meaning": "哦／呀 (表示驚嘆或起始)"}, {"text": "眩しア", "reading": "まぶしあ", "pos": "名詞", "meaning": "炫目的光芒／耀眼的存在 (風格化表達)"}, {"text": "を", "reading": "を", "pos": "助詞", "meaning": "賓語助詞"}, {"text": "守れ", "reading": "まもれ", "pos": "動詞", "meaning": "保護 (動詞「守る」的命令形)"}, {"text": "愛する", "reading": "あいする", "pos": "動詞", "meaning": "所愛的 (動詞「愛す」的連體形)"}, {"text": "人", "reading": "ひと", "pos": "名詞", "meaning": "人"}, {"text": "を", "reading": "を", "pos": "助詞", "meaning": "賓語助詞"}, {"text": "たましい", "reading": "たましい", "pos": "名詞", "meaning": "靈魂"}, {"text": "自分", "reading": "じぶん", "pos": "名詞", "meaning": "自己"}, {"text": "に", "reading": "に", "pos": "助詞", "meaning": "表示結果或狀態的助詞 (成為...)"}], "grammar": "「を」表示賓語，「守れ」是命令形。「愛する」是連體形動詞修飾「人」。「に」表示成為某種狀態。"}, {"id": 32, "start": 197.799, "end": 208.799, "japanese": "なれる", "chinese": "你將能成就。", "words": [{"text": "なれる", "reading": "なれる", "pos": "動詞", "meaning": "能夠成為 (動詞「なる」的可能形)"}], "grammar": "動詞「なる」的可能形「なれる」，表示能夠做到某事。"}, {"id": 33, "start": 199.158, "end": 213.318, "japanese": "さ壊せ弱気な君を崩せぶつかる亀を熱いこ", "chinese": "擊潰怯懦的你，粉碎那阻礙的龜甲，這股熾熱", "words": [{"text": "さ", "reading": "さ", "pos": "感嘆詞", "meaning": "喂／呀 (表示號召或感嘆)"}, {"text": "壊せ", "reading": "こわせ", "pos": "動詞", "meaning": "破壞／打碎 (動詞「壊す」的命令形)"}, {"text": "弱気な", "reading": "よわきな", "pos": "形容動詞", "meaning": "懦弱的／膽怯的"}, {"text": "君", "reading": "きみ", "pos": "名詞", "meaning": "你"}, {"text": "を", "reading": "を", "pos": "助詞", "meaning": "賓語助詞"}, {"text": "崩せ", "reading": "くずせ", "pos": "動詞", "meaning": "摧毀／瓦解 (動詞「崩す」的命令形)"}, {"text": "ぶつかる", "reading": "ぶつかる", "pos": "動詞", "meaning": "碰撞的／衝突的 (動詞「ぶつかる」的連體形)"}, {"text": "亀", "reading": "かめ", "pos": "名詞", "meaning": "烏龜 (此處可能指龜殼或防禦)"}, {"text": "を", "reading": "を", "pos": "助詞", "meaning": "賓語助詞"}, {"text": "熱い", "reading": "あつい", "pos": "形容詞", "meaning": "熱情的／熾熱的"}, {"text": "こ", "reading": "こ", "pos": "名詞", "meaning": "心 (「心」こころ的省略)"}], "grammar": "「さ」感嘆詞。「壊せ」「崩せ」是命令形。「弱気な」為形容動詞修飾名詞。「ぶつかる」為動詞連體形修飾名詞。"}, {"id": 34, "start": 208.799, "end": 213.318, "japanese": "武器にるから", "chinese": "將化為你的武器。", "words": [{"text": "武器", "reading": "ぶき", "pos": "名詞", "meaning": "武器"}, {"text": "に", "reading": "に", "pos": "助詞", "meaning": "表示狀態或結果的助詞"}, {"text": "る", "reading": "る", "pos": "動詞", "meaning": "是／成為 (「なる」或「する」的省略形式)"}, {"text": "から", "reading": "から", "pos": "助詞", "meaning": "因為／理由助詞"}], "grammar": "「に」表示結果狀態。「るから」應為「になるから」或「にするから」的省略，表示原因。"}, {"id": 35, "start": 219.56, "end": 229.748, "japanese": "[音楽]", "chinese": "[音樂]", "words": [{"text": "音楽", "reading": "おんがく", "pos": "名詞", "meaning": "音樂"}], "grammar": "方括號內的「音楽」表示該處為音樂而非對白。"}, {"id": 36, "start": 232.129, "end": 240.33, "japanese": "[音楽]", "chinese": "[音樂]", "words": [{"text": "音楽", "reading": "おんがく", "pos": "名詞", "meaning": "音樂"}], "grammar": "方括號內的「音楽」表示該處為音樂而非對白。"}];
+// ---- YouTube IFrame API ----
+var ytPlayer = null;
+var ytReady = false;
+
+// Shim: make "video" behave like an HTML5 video element
+var video = {
+  get currentTime() { return ytReady ? ytPlayer.getCurrentTime() : 0; },
+  set currentTime(t) { if (ytReady) ytPlayer.seekTo(t, true); },
+  get duration() { return ytReady ? ytPlayer.getDuration() : 0; },
+  get paused() { return !ytReady || ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING; },
+  play()  { if (ytReady) ytPlayer.playVideo(); },
+  pause() { if (ytReady) ytPlayer.pauseVideo(); },
+};
+window.video = video;
+
+function setPlaybackRate(r) { if (ytReady) ytPlayer.setPlaybackRate(r); }
+
+function onYouTubeIframeAPIReady() {
+  ytPlayer = new YT.Player('yt-player', {
+    height: '100%',
+    width: '100%',
+    videoId: 'chteZXqFnc4',
+    playerVars: { rel: 0, modestbranding: 1, playsinline: 1 },
+    events: {
+      onReady: function() {
+        ytReady = true;
+        startPolling();
+      },
+      onStateChange: function(e) {
+        if (e.data === YT.PlayerState.PLAYING) {
+          document.getElementById('play-btn').textContent = '⏸';
+        } else {
+          document.getElementById('play-btn').textContent = '▶';
+        }
+      }
+    }
+  });
+}
+
+(function() {
+  var tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+})();
+let currentIdx = -1;
+let repeatMode = false;
+let pausedForRepeat = false;
+let currentWordData = null;
+let vocabKey = 'vocab_' + location.href;
+
+// ---- Vocab storage ----
+function loadVocab() {
+  try { return JSON.parse(localStorage.getItem(vocabKey) || '[]'); }
+  catch { return []; }
+}
+function saveVocab(list) {
+  localStorage.setItem(vocabKey, JSON.stringify(list));
+  document.getElementById('vocab-count').textContent = list.length;
+}
+function initVocabCount() {
+  document.getElementById('vocab-count').textContent = loadVocab().length;
+}
+
+// ---- Subtitle sync ----
+function findSubtitleIdx(t) {
+  let lo = 0, hi = SUBTITLES.length - 1;
+  while (lo <= hi) {
+    const mid = (lo + hi) >> 1;
+    const s = SUBTITLES[mid];
+    if (t < s.start) hi = mid - 1;
+    else if (t > s.end) lo = mid + 1;
+    else return mid;
+  }
+  return -1;
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderSubtitle(idx) {
+  const jpEl = document.getElementById('jp-subtitle');
+  const zhEl = document.getElementById('zh-subtitle');
+  const overlay = document.getElementById('subtitle-overlay');
+  if (idx < 0) {
+    jpEl.innerHTML = '';
+    zhEl.textContent = '';
+    overlay.classList.remove('has-content');
+    return;
+  }
+  const sub = SUBTITLES[idx];
+  overlay.classList.add('has-content');
+  zhEl.textContent = sub.chinese || '';
+  if (sub.words && sub.words.length > 0) {
+    jpEl.innerHTML = sub.words.map(w =>
+      `<span class="word" data-text="${esc(w.text)}" data-reading="${esc(w.reading||w.text)}" data-pos="${esc(w.pos||'')}" data-meaning="${esc(w.meaning||'')}">${esc(w.text)}</span>`
+    ).join('');
+  } else {
+    jpEl.innerHTML = `<span class="sentence-text">${esc(sub.japanese)}</span>`;
+  }
+}
+
+function startPolling() {
+  setInterval(() => {
+    if (!ytReady) return;
+    const t = video.currentTime;
+    const idx = findSubtitleIdx(t);
+    if (idx !== currentIdx) {
+      currentIdx = idx;
+      renderSubtitle(idx);
+      if (!document.getElementById('grammar-panel').style.display.includes('none')) {
+        renderGrammar(idx);
+      }
+    }
+    if (repeatMode && idx >= 0 && !pausedForRepeat) {
+      const sub = SUBTITLES[idx];
+      if (t >= sub.end - 0.08) {
+        video.pause();
+        pausedForRepeat = true;
+      }
+    }
+    const dur = video.duration;
+    if (dur) {
+      document.getElementById('progress-fill').style.width = (t / dur * 100) + '%';
+    }
+    document.getElementById('time-display').textContent = fmtTime(t) + ' / ' + fmtTime(dur || 0);
+  }, 100);
+}
+
+// ---- Controls ----
+function togglePlay() {
+  if (video.paused) video.play(); else video.pause();
+}
+
+document.getElementById('progress-wrap').addEventListener('click', e => {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const ratio = (e.clientX - rect.left) / rect.width;
+  if (video.duration) video.currentTime = ratio * video.duration;
+});
+
+function fmtTime(s) {
+  if (!s || isNaN(s)) return '0:00';
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return m + ':' + String(sec).padStart(2, '0');
+}
+
+// ---- Repeat mode ----
+function toggleRepeat() {
+  repeatMode = !repeatMode;
+  pausedForRepeat = false;
+  document.getElementById('repeat-btn').classList.toggle('active', repeatMode);
+  document.getElementById('repeat-hint').style.display = repeatMode ? 'block' : 'none';
+}
+
+function jumpToPrevSub() {
+  let target;
+  if (currentIdx > 0) {
+    target = currentIdx - 1;
+  } else if (currentIdx === 0) {
+    target = 0;
+  } else {
+    // between subtitles: find last sub that started before now
+    const now = video.currentTime;
+    target = -1;
+    for (let i = SUBTITLES.length - 1; i >= 0; i--) {
+      if (SUBTITLES[i].start < now) { target = i; break; }
+    }
+  }
+  if (target >= 0) video.currentTime = SUBTITLES[target].start + 0.01;
+}
+
+function jumpToNextSub() {
+  let target;
+  if (currentIdx >= 0) {
+    target = currentIdx + 1;
+  } else {
+    // between subtitles: find first sub that starts after now
+    const now = video.currentTime;
+    target = -1;
+    for (let i = 0; i < SUBTITLES.length; i++) {
+      if (SUBTITLES[i].start > now) { target = i; break; }
+    }
+  }
+  if (target >= 0 && target < SUBTITLES.length) video.currentTime = SUBTITLES[target].start + 0.01;
+}
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
+  if (repeatMode) {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      if (currentIdx >= 0) {
+        video.currentTime = SUBTITLES[currentIdx].start + 0.01;
+        video.play();
+        pausedForRepeat = false;
+      }
+    } else if (e.code === 'ArrowRight' || e.code === 'Enter') {
+      e.preventDefault();
+      pausedForRepeat = false;
+      video.play();
+    } else if (e.code === 'ArrowLeft') {
+      e.preventDefault();
+      jumpToPrevSub();
+    }
+  } else {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      togglePlay();
+    } else if (e.code === 'ArrowLeft') {
+      e.preventDefault();
+      jumpToPrevSub();
+    } else if (e.code === 'ArrowRight') {
+      e.preventDefault();
+      jumpToNextSub();
+    }
+  }
+});
+
+// ---- Word popup ----
+document.getElementById('jp-subtitle').addEventListener('click', e => {
+  const word = e.target.closest('.word');
+  if (word) {
+    e.stopPropagation();
+    showWordPopup(word, e);
+  } else if (e.target.closest('.subtitle-overlay')) {
+    // Clicked sentence area -> show grammar
+    showGrammarPanel();
+  }
+});
+
+function showWordPopup(el, e) {
+  currentWordData = {
+    text: el.dataset.text,
+    reading: el.dataset.reading,
+    pos: el.dataset.pos,
+    meaning: el.dataset.meaning,
+    sentence: currentIdx >= 0 ? SUBTITLES[currentIdx].japanese : ''
+  };
+  document.getElementById('pu-word').textContent = currentWordData.text;
+  document.getElementById('pu-reading').textContent = currentWordData.reading !== currentWordData.text ? currentWordData.reading : '';
+  document.getElementById('pu-pos').textContent = currentWordData.pos;
+  document.getElementById('pu-meaning').textContent = currentWordData.meaning;
+
+  const saveBtn = document.getElementById('pu-save');
+  const vocab = loadVocab();
+  const already = vocab.some(v => v.text === currentWordData.text);
+  saveBtn.textContent = already ? '已加入生詞本' : '加入生詞本';
+  saveBtn.className = 'popup-save' + (already ? ' popup-saved' : '');
+  saveBtn.onclick = already ? null : addCurrentToVocab;
+
+  const popup = document.getElementById('word-popup');
+  popup.style.display = 'block';
+  // Position: above the word
+  const rect = el.getBoundingClientRect();
+  const pw = popup.offsetWidth || 220;
+  const ph = popup.offsetHeight || 120;
+  let x = rect.left + rect.width / 2 - pw / 2;
+  let y = rect.top - ph - 8;
+  if (y < 8) y = rect.bottom + 8;
+  if (x < 8) x = 8;
+  if (x + pw > window.innerWidth - 8) x = window.innerWidth - pw - 8;
+  popup.style.left = x + 'px';
+  popup.style.top = y + 'px';
+}
+
+function hidePopup() {
+  document.getElementById('word-popup').style.display = 'none';
+  currentWordData = null;
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#word-popup') && !e.target.closest('.word')) hidePopup();
+});
+
+function addCurrentToVocab() {
+  if (!currentWordData) return;
+  const vocab = loadVocab();
+  if (!vocab.some(v => v.text === currentWordData.text)) {
+    vocab.unshift({ ...currentWordData, addedAt: new Date().toISOString() });
+    saveVocab(vocab);
+    const saveBtn = document.getElementById('pu-save');
+    saveBtn.textContent = '已加入生詞本';
+    saveBtn.className = 'popup-save popup-saved';
+    saveBtn.onclick = null;
+    if (!document.getElementById('vocab-panel').style.display.includes('none')) renderVocab();
+  }
+}
+
+// ---- Grammar Panel ----
+function toggleGrammar() {
+  const panel = document.getElementById('grammar-panel');
+  const isHidden = panel.style.display === 'none';
+  panel.style.display = isHidden ? 'flex' : 'none';
+  document.getElementById('grammar-btn').classList.toggle('active', isHidden);
+  if (isHidden) renderGrammar(currentIdx);
+}
+
+function showGrammarPanel() {
+  const panel = document.getElementById('grammar-panel');
+  panel.style.display = 'flex';
+  document.getElementById('grammar-btn').classList.add('active');
+  renderGrammar(currentIdx);
+}
+
+function renderGrammar(idx) {
+  const el = document.getElementById('grammar-content');
+  if (idx < 0 || idx >= SUBTITLES.length) {
+    el.innerHTML = '<div style="color:#555;font-size:14px;text-align:center;margin-top:40px">點擊字幕顯示文法解析</div>';
+    return;
+  }
+  const sub = SUBTITLES[idx];
+  let html = `<div class="grammar-sentence">${esc(sub.japanese)}<br><span style="font-size:13px;color:#888">${esc(sub.chinese)}</span></div>`;
+  html += `<div class="grammar-text">${esc(sub.grammar || '（無文法資料）')}</div>`;
+
+  if (sub.words && sub.words.length > 0) {
+    html += `<div class="grammar-words"><h4>分詞列表</h4>`;
+    sub.words.forEach(w => {
+      html += `<div class="word-row" onclick="showWordInPopupFromGrammar(this)" data-text="${esc(w.text)}" data-reading="${esc(w.reading||w.text)}" data-pos="${esc(w.pos||'')}" data-meaning="${esc(w.meaning||'')}">
+        <span class="wr-text">${esc(w.text)}</span>
+        <span class="wr-reading">${esc(w.reading||'')}</span>
+        <span class="wr-pos">${esc(w.pos||'')}</span>
+        <span class="wr-meaning">${esc(w.meaning||'')}</span>
+        <span class="wr-add" title="加入生詞本">＋</span>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  el.innerHTML = html;
+}
+
+function showWordInPopupFromGrammar(row) {
+  // Add to vocab directly from grammar panel
+  const data = {
+    text: row.dataset.text, reading: row.dataset.reading,
+    pos: row.dataset.pos, meaning: row.dataset.meaning,
+    sentence: currentIdx >= 0 ? SUBTITLES[currentIdx].japanese : ''
+  };
+  currentWordData = data;
+  const vocab = loadVocab();
+  if (!vocab.some(v => v.text === data.text)) {
+    vocab.unshift({ ...data, addedAt: new Date().toISOString() });
+    saveVocab(vocab);
+    const addBtn = row.querySelector('.wr-add');
+    if (addBtn) { addBtn.textContent = '✓'; addBtn.style.color = '#6adf9a'; }
+    if (!document.getElementById('vocab-panel').style.display.includes('none')) renderVocab();
+  }
+}
+
+// ---- Vocab Panel ----
+function toggleVocab() {
+  const panel = document.getElementById('vocab-panel');
+  const isHidden = panel.style.display === 'none';
+  panel.style.display = isHidden ? 'flex' : 'none';
+  document.getElementById('vocab-btn').classList.toggle('active', isHidden);
+  if (isHidden) renderVocab();
+}
+
+function renderVocab() {
+  const vocab = loadVocab();
+  const el = document.getElementById('vocab-content');
+  if (vocab.length === 0) {
+    el.innerHTML = '<div class="vocab-empty">生詞本是空的<br><br>點擊字幕中的單字<br>按「加入生詞本」儲存</div>';
+    return;
+  }
+  let html = `<button class="copy-btn" onclick="copyVocab()">複製全部（純文字）</button>`;
+  vocab.forEach((v, i) => {
+    html += `<div class="vocab-item">
+      <div class="vocab-item-header">
+        <div>
+          <span class="vocab-word">${esc(v.text)}</span>
+          <span class="vocab-reading" style="margin-left:8px">${esc(v.reading||'')}</span>
+          <span class="vocab-pos" style="margin-left:6px">${esc(v.pos||'')}</span>
+        </div>
+        <button class="vocab-del" onclick="deleteVocab(${i})" title="刪除">×</button>
+      </div>
+      <div class="vocab-meaning">${esc(v.meaning||'')}</div>
+      ${v.sentence ? `<div class="vocab-sentence">${esc(v.sentence)}</div>` : ''}
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function deleteVocab(idx) {
+  const vocab = loadVocab();
+  vocab.splice(idx, 1);
+  saveVocab(vocab);
+  renderVocab();
+}
+
+function copyVocab() {
+  const vocab = loadVocab();
+  const text = vocab.map(v => `${v.text}\t${v.reading||''}\t${v.pos||''}\t${v.meaning||''}\t${v.sentence||''}`).join('\n');
+  navigator.clipboard.writeText(text).then(() => alert('已複製 ' + vocab.length + ' 個生詞'));
+}
+
+initVocabCount();
+</script>
+</body>
+</html>
